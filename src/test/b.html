@@ -1,0 +1,77 @@
+<html><body>
+package test;<br/>
+<br/>
+<br/>
+import java.io.BufferedReader;<br/>
+import java.io.FileReader;<br/>
+import java.io.PrintWriter;<br/>
+<br/>
+/*java源码转换成HTML*/<br/>
+<b>public</b> <b>class</b> code_transform {<br/>
+<br/>
+    /**<br/>
+     * @param args<br/>
+     */<br/>
+    <b>public</b> <b>static</b> <b>void</b> <b>main</b>(String[] args) throws Exception {<br/>
+        BufferedReader br = new BufferedReader(new FileReader( " F:\\study&work\\works\\java\\<b>class</b>_design\\<b>class</b>_design\\src\\test\\code_transform.java " ));<br/>
+        PrintWriter pw = new PrintWriter( " F:\\study&work\\works\\java\\<b>class</b>_design\\<b>class</b>_design\\src\\test\\b.html " );<br/>
+        pw.write( " <html><body>\n " );<br/>
+        String str = null;<br/>
+        while ((str = br.readLine()) != null) {<br/>
+            pw.write(process(str));<br/>
+<br/>
+        }<br/>
+        pw.write( " </body></html> " );<br/>
+        br.close();<br/>
+        pw.close();<br/>
+        System.out.println( " ok " );<br/>
+<br/>
+    }<br/>
+<br/>
+    <b>public</b> <b>static</b> String process(String s) {<br/>
+        StringBuilder sb = new StringBuilder();<br/>
+        char[] ch = new char[50];<br/>
+        ch = s.toCharArray();<br/>
+        for (int i = 0; i < ch.length; i++) {<br/>
+            switch (ch[i]) {<br/>
+                case '&':<br/>
+                    sb.append( " & " );<br/>
+                    break;<br/>
+                case ' ':<br/>
+                    sb.append( "   " );<br/>
+                    break;<br/>
+                case '<':<br/>
+                    sb.append( " < " );<br/>
+                    break;<br/>
+                case '>':<br/>
+                    sb.append( " > " );<br/>
+                    break;<br/>
+                case ' " ':<br/>
+                    sb.append( "  \ "   " );<br/>
+                    break;<br/>
+                case '\t':<br/>
+                    sb.append( "      " );<br/>
+                    break;<br/>
+                default:<br/>
+                    sb.append(ch[i]);<br/>
+            }<br/>
+        }<br/>
+        String string = sb.toString();<br/>
+        string=string.replaceAll( " <b>public</b> " ,  " <b><b>public</b></b> " );<br/>
+        string = string.replaceAll( " <b>class</b> " ,  " <b><b>class</b></b> " );<br/>
+        string = string.replaceAll( " <b>static</b> " ,  " <b><b>static</b></b> " );<br/>
+        string = string.replaceAll( " <b>main</b> " ,  " <b><b>main</b></b> " );<br/>
+        string = string.replaceAll( " <b>void</b> " ,  " <b><b>void</b></b> " );<br/>
+        int n=string.lastIndexOf( " \\/\\/ " );<br/>
+        if(n!=-1){<br/>
+            String temp=string.substring(n);<br/>
+            string=string.replaceAll(temp,  " <font color=green> " +temp+ " </font> " );<br/>
+        }<br/>
+        string+= " <br/>\n " ;<br/>
+        return string;<br/>
+<br/>
+    }<br/>
+<br/>
+}<br/>
+<br/>
+</body></html>
