@@ -13,14 +13,18 @@ import java.util.Scanner;
 public class Transformation {
     private String input_file;
     private String output_file;
+    private JavaSyntaxHighlighter hlt;
+
     Transformation(String input_file,String output_file)throws Exception{
+
         this.input_file=input_file;
         this.output_file=output_file;
-        Main_Transformation();
+        hlt = new JavaSyntaxHighlighter();//创建JavaSyntaxHighlighter类
+
     }
+
     @Test
     public void Main_Transformation() throws Exception {
-        JavaSyntaxHighlighter jsh = new JavaSyntaxHighlighter();//创建JavaSyntaxHighlighter类
 
         String[] html_head = {"<!DOCTYPE html>",
                 "<html>", "<head>",
@@ -51,12 +55,33 @@ public class Transformation {
             reader = new BufferedReader(new FileReader(readin_file));
             output = new PrintWriter(putout_file);
             String tempString = null;
+
+            //这里将html_head+\n先放到文件头部
+            String temp = new String();
+            for(String str1 : html_head) {
+                if (str1 != "<pre>") {
+                    output.write(str1 + '\n');
+                }
+                else {output.write("<pre>");}
+            }
+
             // 一次读入一行，直到读入null为文件结束
             String str;
             while ((str = reader.readLine()) != null) {
                 output.write(process(str));
             }
-            reader.close();
+
+            //这里放入html结尾格式
+            for(String str2 : html_tail) {
+                if (str2 != "</html>") {
+                    output.write(str2 + '\n');
+                }
+                else {output.write("</html>");}
+            }
+
+            reader.close();//关闭输入
+            output.close();//关闭输出
+
         } catch (IOException e) {//这里处理异常
             e.printStackTrace();
         } finally {
@@ -84,8 +109,11 @@ public class Transformation {
     }
     public String process(String string){
         String final_str = new String();
+
         string.replaceAll("<", "&lt");//替换java中的“<”为html的显示符
 
+        final_str = hlt.highlight(string);//进行代码高亮处理
+        final_str += '\n';//最后每行换行
 
         return final_str;
     }

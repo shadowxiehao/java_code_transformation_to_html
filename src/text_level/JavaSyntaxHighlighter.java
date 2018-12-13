@@ -4,17 +4,18 @@ public class JavaSyntaxHighlighter {
     private String line;
     private int x;
     private String[] keywords;
-    private String[] regexkeywords=
+    private String[] regexkeywords =
             {"abstract", "assert", "boolean", "break", "byte",
-            "case", "catch", "char", "class", "const",
-            "continue", "default", "do", "double", "else",
-            "enum", "extends", "final", "finally", "float",
-            "for", "goto", "if", "implements", "import",
-            "instanceof", "int", "interface", "long", "native",
-            "new", "package", "private", "protected", "public",
-            "return", "strictfp", "short", "static", "super",
-            "switch", "synchronized", "this", "throw", "throws",
-            "transient", "try", "void", "volatile", "while"};;
+                    "case", "catch", "char", "class", "const",
+                    "continue", "default", "do", "double", "else",
+                    "enum", "extends", "final", "finally", "float",
+                    "for", "goto", "if", "implements", "import",
+                    "instanceof", "int", "interface", "long", "native",
+                    "new", "package", "private", "protected", "public",
+                    "return", "strictfp", "short", "static", "super",
+                    "switch", "synchronized", "this", "throw", "throws",
+                    "transient", "try", "void", "volatile", "while"};
+
 
     JavaSyntaxHighlighter() {
         this.x = 0;
@@ -40,7 +41,7 @@ public class JavaSyntaxHighlighter {
         //'高亮字符串'
         String codeline = this.line[:pos]; // 代码部分
         String noteline = this.line[pos:]; // 不处理行尾注释
-        String strlist = re.findall(r '\".*?\"|\'.*?\'', codeline); // 搜索所有字符串
+        String[] strlist = re.findall("\".*?\"|\'.*?\'", codeline); // 搜索所有字符串
         if strlist is not None {
             for (String string : strlist) {
                 codeline = codeline.replace(string, " [str] " + string + " [end] ");
@@ -65,29 +66,32 @@ public class JavaSyntaxHighlighter {
         char[] opr = {'=', '(', ')', '{', '}', '|', '+', '-', '*', '/', '<', '>'};
         for (char o : opr) {
             String temp = " [opr] " + o + " [end] ";
-            String str_o = o+"";
-            line = line.replaceAll(str_o,temp);  // 未实现关于字符串内的运算符处理
+            String str_o = o + "";
+            line = line.replaceAll(str_o, temp);  // 未实现关于字符串内的运算符处理
         }
     }
 
-    String translate(data="") {
+    String translate(String data) {
         //'转换为html标签'
-        name = ["note", "key", "str", "opr"];
-        for n in name:
-        data = data.replace(" [" + n + "] ", "<span class='" + n + "'>");
+        String[] name = {"note", "key", "str", "opr"};
+        for (String n : name) {
+            data = data.replace(" [" + n + "] ", "<span class='" + n + "'>");
+        }
         data = data.replace(" [end] ", "</span>");
         return data;
+
     }
 
     String highlight(String line) {
         //'单行代码高亮'
         this.line = line;
-        if (this.line.strip() == '') {
+        if (this.line.trim() == "") {
             return line;
         }  //空串不处理
         String note;  //注释
         note = " ";
-        find_note = re.match(r '/(/|\*)(.*)|\*(.*)|(.*)\*/$', this.line.strip()); //查找单行注释;
+
+        find_note = re.match('/(/|\*)(.*)|\*(.*)|(.*)\*/$', this.line.trim()); //查找单行注释;
         if (find_note) {
             //处理单行注释;
             note = find_note.group();
@@ -95,7 +99,7 @@ public class JavaSyntaxHighlighter {
             return this.line;
         }
         int pos = len(this.line);
-        find_note = re.search(r '(?<=[){};])(.*)/(/|\*).*$', this.line.strip());  //查找行尾注释;
+        find_note = re.search('(?<=[){};])(.*)/(/|\*).*$', this.line.trim());  //查找行尾注释;
         if (find_note) {
             note = find_note.group();  //标记行尾注释;
             pos = find_note.span()[0];//标记注释位置;
