@@ -1,39 +1,59 @@
 <html><body>
-package test;<br/>
+<pre><white-space: pre>package text_level;<br/>
 <br/>
+import org.junit.jupiter.api.Test;<br/>
 <br/>
 import java.io.BufferedReader;<br/>
 import java.io.FileReader;<br/>
 import java.io.PrintWriter;<br/>
 <br/>
-/*java源码转换成HTML*/<br/>
-<b>public</b> <b>class</b> code_transform {<br/>
+/**<br/>
+ * @author XieHao 谢昊<br/>
+ * 这个类主要进行文本格式层面的转化<br/>
+ */<br/>
+<b>public</b> <b>class</b> Transform {<br/>
+    String a,b = new String();<br/>
+<br/>
+    <b>public</b> Transform(){<br/>
+        ;<br/>
+    }<br/>
 <br/>
     /**<br/>
-     * @param args<br/>
+     * 这个函数用于获取字符文本的所在地址和输出地址 并进行转化后 输出html到指定地址<br/>
+     *<br/>
+     * @throws Exception 读取文件时可能产生的exception<br/>
      */<br/>
-    <b>public</b> <b>static</b> <b>void</b> <b>main</b>(String[] args) throws Exception {<br/>
-        BufferedReader br = new BufferedReader(new FileReader( " F:\\study&work\\works\\java\\<b>class</b>_design\\<b>class</b>_design\\src\\test\\code_transform.java " ));<br/>
-        PrintWriter pw = new PrintWriter( " F:\\study&work\\works\\java\\<b>class</b>_design\\<b>class</b>_design\\src\\test\\b.html " );<br/>
-        pw.write( " <html><body>\n " );<br/>
+    @Test<br/>
+    <b>public</b> <b>void</b> <b>main</b>_transform() throws Exception {<br/>
+        BufferedReader br = new BufferedReader(new FileReader( " F:\\study&work\\works\\java\\<b>class</b>_design\\curriculum design\\src\\text_level\\Transform.java " ));<br/>
+        PrintWriter pw = new PrintWriter( " F:\\study&work\\works\\java\\<b>class</b>_design\\curriculum design\\src\\test\\b.html " );<br/>
+        pw.write( " <html><body>\n<pre><white-space: pre> " );<br/>
         String str = null;<br/>
         while ((str = br.readLine()) != null) {<br/>
             pw.write(process(str));<br/>
-<br/>
         }<br/>
         pw.write( " </body></html> " );<br/>
         br.close();<br/>
         pw.close();<br/>
         System.out.println( " ok " );<br/>
-<br/>
     }<br/>
 <br/>
-    <b>public</b> <b>static</b> String process(String s) {<br/>
+    /**<br/>
+     * 读取java格式string 转化为 html格式 string<br/>
+     *<br/>
+     * @param s java格式的字符串<br/>
+     * @return html格式的字符串<br/>
+     */<br/>
+    @Test<br/>
+    <b>public</b> String process(String s) {<br/>
+        int len = s.length(); //定义字符串长度len<br/>
         StringBuilder sb = new StringBuilder();<br/>
-        char[] ch = new char[50];<br/>
-        ch = s.toCharArray();<br/>
-        for (int i = 0; i < ch.length; i++) {<br/>
-            switch (ch[i]) {<br/>
+        char[] ch = new char[len]; //创建长度为len的字符数组<br/>
+        ch = s.toCharArray(); //转为字符数组 方便判断<br/>
+<br/>
+<br/>
+        for (char i : ch) {<br/>
+            switch (i) {<br/>
                 case '&':<br/>
                     sb.append( " & " );<br/>
                     break;<br/>
@@ -53,25 +73,23 @@ import java.io.PrintWriter;<br/>
                     sb.append( "      " );<br/>
                     break;<br/>
                 default:<br/>
-                    sb.append(ch[i]);<br/>
+                    sb.append(i);<br/>
             }<br/>
         }<br/>
+<br/>
         String string = sb.toString();<br/>
-        string=string.replaceAll( " <b>public</b> " ,  " <b><b>public</b></b> " );<br/>
+        string = string.replaceAll( " <b>public</b> " ,  " <b><b>public</b></b> " );<br/>
         string = string.replaceAll( " <b>class</b> " ,  " <b><b>class</b></b> " );<br/>
         string = string.replaceAll( " <b>static</b> " ,  " <b><b>static</b></b> " );<br/>
         string = string.replaceAll( " <b>main</b> " ,  " <b><b>main</b></b> " );<br/>
         string = string.replaceAll( " <b>void</b> " ,  " <b><b>void</b></b> " );<br/>
-        int n=string.lastIndexOf( " \\/\\/ " );<br/>
-        if(n!=-1){<br/>
-            String temp=string.substring(n);<br/>
-            string=string.replaceAll(temp,  " <font color=green> " +temp+ " </font> " );<br/>
+        int n = string.lastIndexOf( " \\/\\/ " );<br/>
+        if (n != -1) {<br/>
+            String temp = string.substring(n);<br/>
+            string = string.replaceAll(temp,  " <font color=green> "  + temp +  " </font> " );<br/>
         }<br/>
-        string+= " <br/>\n " ;<br/>
+        string +=  " <br/>\n " ;<br/>
         return string;<br/>
-<br/>
     }<br/>
-<br/>
 }<br/>
-<br/>
 </body></html>
