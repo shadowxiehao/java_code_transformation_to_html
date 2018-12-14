@@ -1,5 +1,8 @@
 package text_level;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class JavaSyntaxHighlighter {
     private String line;
     private int x;
@@ -32,37 +35,56 @@ public class JavaSyntaxHighlighter {
 
     void highlight_note(String note) {
         //'高亮注释行'
-        if (note != "") {  // note为空,表示行尾无注释
-            this.line = this.line.replace(note, " [note] " + note + " [end] ")
+        if (!note.equals("")) {  // note为空,表示行尾无注释
+            this.line = this.line.replace(note, " [note] " + note + " [end] ");
         }
     }
 
     void highlight_string(int pos) {
         //'高亮字符串'
-        String codeline = this.line[:pos]; // 代码部分
-        String noteline = this.line[pos:]; // 不处理行尾注释
-        String[] strlist = re.findall("\".*?\"|\'.*?\'", codeline); // 搜索所有字符串
-        if strlist is not None {
-            for (String string : strlist) {
-                codeline = codeline.replace(string, " [str] " + string + " [end] ");
+        String codeline = this.line.substring(0, pos); // 代码部分
+        String noteline = this.line.substring(pos); // 不处理行尾注释
+
+        Matcher m = Pattern.compile("\".*?\"|\'.*?\'").matcher(codeline);
+        int n;
+        if (m.find()) {
+            n = m.groupCount();
+            if (n != 0) {
+                String[] strlist = new String[n];
+                for (int i = 0; i < n; i++) {
+                    strlist[i] = m.group(i);
+                }
+                for (String string : strlist) {
+                    codeline = codeline.replace(string, " [str] " + string + " [end] ");
+                }
             }
         }
+        //String[] strlist = re.findall("\".*?\"|\'.*?\'", codeline); // 搜索所有字符串
+//        if strlist is not None {
+//            for (String string : strlist) {
+//                codeline = codeline.replace(string, " [str] " + string + " [end] ");
+//            }
+//        }
         this.line = codeline + noteline;
     }
 
     void highlight_keyword(int pos) {
         //'高亮关键字'
-        String codeline = " " + this.line[:pos]+" ";
-        String noteline = this.line[pos:];
-        for r, w in zip (this.regexkeywords, this.keywords){
-            codeline = re.sub(r, " [key] " + w + " [end] ", codeline);
+        String codeline = " " + this.line.substring(0, pos) + " ";
+        String noteline = this.line.substring(pos);
+        for (String r : this.regexkeywords) {
+            for (String w : this.keywords) {
+                codeline = codeline.replace(r, " [key] " + w + " [end] ");
+            }
         }
+//        for r, w in zip (this.regexkeywords, this.keywords){
+//            codeline = re.sub(r, " [key] " + w + " [end] ", codeline);
+//        }
         this.line = codeline + noteline;
     }
 
-    String highlight_operator() {
+    void highlight_operator() {
         //'高亮运算符'
-        line = this.line;
         char[] opr = {'=', '(', ')', '{', '}', '|', '+', '-', '*', '/', '<', '>'};
         for (char o : opr) {
             String temp = " [opr] " + o + " [end] ";
@@ -85,24 +107,29 @@ public class JavaSyntaxHighlighter {
     String highlight(String line) {
         //'单行代码高亮'
         this.line = line;
-        if (this.line.trim() == "") {
+        if (this.line.trim().equals("")) {
             return line;
         }  //空串不处理
         String note;  //注释
         note = " ";
 
-        find_note = re.match('/(/|\*)(.*)|\*(.*)|(.*)\*/$', this.line.trim()); //查找单行注释;
-        if (find_note) {
+        //查找单行注释
+        Pattern p1 = Pattern.compile("/(/|\\*)(.*)|\\*(.*)|(.*)\\*/$");
+        Matcher find_note = p1.matcher(this.line.trim());
+        //find_note = re.match('/(/|\*)(.*)|\*(.*)|(.*)\*/$', this.line.trim()); //查找单行注释
+        if (find_note.find()) {
             //处理单行注释;
             note = find_note.group();
             this.highlight_note(note);
             return this.line;
         }
-        int pos = len(this.line);
-        find_note = re.search('(?<=[){};])(.*)/(/|\*).*$', this.line.trim());  //查找行尾注释;
-        if (find_note) {
+        int pos = this.line.length();
+
+        find_note = Pattern.compile("(?<=[){};])(.*)/(/|\\*).*$").matcher(this.line.trim());
+        //find_note = re.search('(?<=[){};])(.*)/(/|\*).*$', this.line.trim());  //查找行尾注释;
+        if (find_note.find()) {
             note = find_note.group();  //标记行尾注释;
-            pos = find_note.span()[0];//标记注释位置;
+            pos = find_note.start();//标记注释位置;//span() 返回一个元组包含匹配 (开始,结束) 的位置
         }
         this.highlight_note(note);  //处理行尾注释;
         this.highlight_keyword(pos); //处理关键字;
