@@ -11,19 +11,16 @@ import java.util.Scanner;
  */
 
 public class Transformation {
-    private String input_file;
-    private String output_file;
-    private JavaSyntaxHighlighter hlt;
+    private String input_file ;
+    private String output_file ;
+    private JavaSyntaxHighlighter hlt = new JavaSyntaxHighlighter();//创建JavaSyntaxHighlighter类
 
-    Transformation(String input_file, String output_file) throws Exception {
+    public Transformation(String input_file, String output_file) throws Exception {
 
         this.input_file = input_file;
         this.output_file = output_file;
-        hlt = new JavaSyntaxHighlighter();//创建JavaSyntaxHighlighter类
-
     }
 
-    @Test
     public void Main_Transformation() throws Exception {
 
         String[] html_head = {"<!DOCTYPE html>",
@@ -38,15 +35,6 @@ public class Transformation {
                 "</style>", "</head>", "<body>", "<pre>"};
         String[] html_tail = {"</pre>", "</body>", "</html>"};
 
-        //录入文件路径 测试时用
-        Scanner input = new Scanner(System.in);
-        System.out.print("请输入Java文件路径:");
-        input_file = input.nextLine();
-        System.out.println();
-        System.out.print("请输入想输出的html文件路径:");
-        input_file = input.nextLine();
-        System.out.println();
-
         File readin_file = new File(input_file);// 指定要读取的文件
         File putout_file = new File(output_file);
         BufferedReader reader = null;
@@ -54,7 +42,6 @@ public class Transformation {
         try {//这里办正事= =
             reader = new BufferedReader(new FileReader(readin_file));
             output = new PrintWriter(putout_file);
-            String tempString = null;
 
             //这里将html_head+\n先放到文件头部
             String temp = new String();
@@ -81,7 +68,7 @@ public class Transformation {
 
             //这里放入html结尾格式
             for (String str2 : html_tail) {
-                if (str2 != "</html>") {
+                if (!str2.equals("</html>")) {
                     output.write(str2 + '\n');
                 } else {
                     output.write("</html>");
@@ -90,6 +77,8 @@ public class Transformation {
 
             reader.close();//关闭输入
             output.close();//关闭输出
+
+            System.out.println("转换成功!已保存为:" + output_file);
 
         } catch (IOException e) {//这里处理异常
             e.printStackTrace();
@@ -114,7 +103,6 @@ public class Transformation {
 //            f.write(jsh.translate('\n'.join(data)));  //转换为html的<> 标签
 //            f.write('\n'.join(html_tail));
 //        }
-        System.out.println("转换成功!已保存为:" + input_file + ".html");
     }
 
     public String process(String string) {

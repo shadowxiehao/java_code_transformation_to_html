@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 public class JavaSyntaxHighlighter {
     private String line;
     private int x;
-    private String[] keywords;
-    private String[] regexkeywords =
+    private String[] regexkeywords;
+    private String[] keywords =
             {"abstract", "assert", "boolean", "break", "byte",
                     "case", "catch", "char", "class", "const",
                     "continue", "default", "do", "double", "else",
@@ -20,11 +20,13 @@ public class JavaSyntaxHighlighter {
                     "transient", "try", "void", "volatile", "while"};
 
 
-    JavaSyntaxHighlighter() {
+    public JavaSyntaxHighlighter() {
         this.x = 0;
         this.line = ""; // 保存当前处理的行
 
         int i = 0;
+        int n = this.keywords.length;
+        regexkeywords = new String[n];
         for (String w : this.keywords) {
             this.regexkeywords[i] += "(?<=\\s)";
             this.regexkeywords[i] += w;
@@ -89,7 +91,7 @@ public class JavaSyntaxHighlighter {
         for (char o : opr) {
             String temp = " [opr] " + o + " [end] ";
             String str_o = o + "";
-            line = line.replaceAll(str_o, temp);  // 未实现关于字符串内的运算符处理
+            line = line.replace(str_o, temp);  // 未实现关于字符串内的运算符处理
         }
     }
 
