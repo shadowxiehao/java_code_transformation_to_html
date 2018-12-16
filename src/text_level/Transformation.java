@@ -1,9 +1,6 @@
 package text_level;
 
-import org.testng.annotations.Test;
-
 import java.io.*;
-import java.util.Scanner;
 
 /**
  * @author XieHao 谢昊
@@ -56,6 +53,7 @@ public class Transformation {
                 data += process(str);
                 n++;
             }
+            System.out.println(data);//test
             output.write(hlt.translate(data)); //转换为html的<> 标签
 
             //这里放入html结尾格式
