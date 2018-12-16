@@ -14,13 +14,19 @@ public class simple_test_Regex {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-        String input = " \"<style type=\\\"text/css\\\">\",\"1\";\"2\"";
-        System.out.println(input);
-        Pattern p = Pattern.compile("(?<!\\\\)(\\\")(.*?)(?<!\\\\)(\\\")");
-        Matcher m = p.matcher(input);
-        while (m.find()) {
-            System.out.println(m.group());
-            System.out.println("起点为: "+m.start());
+        String[] input=new String[4];
+        input[1] = " import";
+         input[2] = " import ";
+        input[3] = "import";
+        input[4] = "import ";
+        System.out.println();
+        for(int i=0;i<4;i++) {
+            Matcher m = Pattern.compile("(?<=\\s)*?.*").matcher(input[i]);
+            while (m.find()) {
+                //input = input.replaceAll("(?<=\\s)*?import(?=\\s)*?", " [key] ");
+                System.out.println(i);
+                System.out.println("起点为: " + m.start());
+            }
         }
     }
 }

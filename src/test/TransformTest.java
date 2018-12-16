@@ -10,7 +10,7 @@ import java.util.Scanner;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransformTest {
-
+    @Test
     public static void main(String[] args){
         //录入文件路径 测试时用
         System.out.print("请输入Java文件路径:");

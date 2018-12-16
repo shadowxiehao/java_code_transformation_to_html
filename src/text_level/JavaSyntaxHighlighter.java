@@ -28,9 +28,9 @@ public class JavaSyntaxHighlighter {
         int n = this.keywords.length;
         regexkeywords = new String[n];
         for (String w : this.keywords) {
-            this.regexkeywords[i] += "(?<=\\s)";
+            this.regexkeywords[i] = "(?<=\\s)*?";
             this.regexkeywords[i] += w;
-            this.regexkeywords[i] += "(?=\\s)";
+            this.regexkeywords[i] += "(?=\\s)*?";
             i++;
         }
     }
@@ -51,7 +51,6 @@ public class JavaSyntaxHighlighter {
         Matcher m = Pattern.compile("(?<!\\\\)(\\\")(.*?)(?<!\\\\)(\\\")|(?<!\\\\)(\\\')(.*?)(?<!\\\\)(\\\')").matcher(codeline);
         while (m.find()) {
             String strlist = m.group();
-            System.out.println("-1 " + " " + strlist);//test
             codeline = codeline.replace(strlist, " [str] " + strlist + " [end] ");
         }
         this.line = codeline + noteline;
@@ -65,7 +64,7 @@ public class JavaSyntaxHighlighter {
 
     void highlight_keyword(int pos) {
         //'高亮关键字'
-        String codeline = " " + this.line.substring(0, pos) + " ";
+        String codeline = this.line.substring(0, pos) ;
         String noteline = this.line.substring(pos);
         for (int i = 0; i < keywords.length; i++) {
             codeline = codeline.replaceAll(regexkeywords[i], " [key] " + keywords[i] + " [end] ");
@@ -76,14 +75,17 @@ public class JavaSyntaxHighlighter {
         this.line = codeline + noteline;
     }
 
-    void highlight_operator() {
+    void highlight_operator(int pos) {
         //'高亮运算符'
+        String codeline = " " + this.line.substring(0, pos) + " ";
+        String noteline = this.line.substring(pos);
         char[] opr = {'=', '(', ')', '{', '}', '|', '+', '-', '*', '/', '<', '>'};
         for (char o : opr) {
             String temp = " [opr] " + o + " [end] ";
             String str_o = o + "";
-            line = line.replace(str_o, temp);  // 未实现关于字符串内的运算符处理
+            codeline = codeline.replace(str_o, temp);  // 实现非注释的运算符高亮
         }
+        line = codeline+noteline;
     }
 
     String translate(String data) {
@@ -92,9 +94,10 @@ public class JavaSyntaxHighlighter {
         for (String n : name) {
             data = data.replace(" [" + n + "] ", "<span class=\'" + n + "\'>");
         }
+        System.out.println("2 "+data);//test
         data = data.replace(" [end] ", "</span>");
+        System.out.println("2.6 "+data);//test
         return data;
-
     }
 
     String highlight(String line) {
@@ -115,11 +118,9 @@ public class JavaSyntaxHighlighter {
             //处理单行注释;
             note = find_note1.group(0);
             this.highlight_note(note);
-            System.out.println("0 " + note + " ");//test
             return this.line;
         }
         int pos = this.line.length();
-        System.out.println("1 " + note + " " + pos);//test
 
         //用正则模式(?<=[){};])(.*)/(/|\*).*$查找行尾注释,
         //如果有,返回注释本身note,以及代码与注释的分割位置pos
@@ -131,13 +132,12 @@ public class JavaSyntaxHighlighter {
         if (find_note2.find()) {
             note = find_note2.group();  //标记行尾注释;
             pos = find_note2.start();//标记注释位置;//span() 返回一个元组包含匹配 (开始,结束) 的位置
-            System.out.println("2 " + note + " " + pos);//test
         }
 
         this.highlight_note(note);  //处理行尾注释;
         this.highlight_keyword(pos); //处理关键字;
         this.highlight_string(pos); //处理字符串;
-        this.highlight_operator();  //处理运算符;
+        this.highlight_operator(pos);  //处理运算符;
         return this.line;  //返回处理好的行;
     }
 }
