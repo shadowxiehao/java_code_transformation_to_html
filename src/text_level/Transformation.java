@@ -30,7 +30,6 @@ public class Transformation {
     }
 
     public boolean Main_Transformation() throws Exception {
-
         File readin_file = new File(input_file);// 指定要读取的文件
         File putout_file = new File(output_file);
         BufferedReader reader = null;
@@ -53,7 +52,6 @@ public class Transformation {
                 data += process(str);
                 n++;
             }
-            System.out.println(data);//test
             output.write(hlt.translate(data)); //转换为html的<> 标签
 
             //这里放入html结尾格式

@@ -53,7 +53,6 @@ public class JavaSyntaxHighlighter {
             pos = find_note2.start();  //标记行尾注释;
         }
         codeline = this.line.substring(pos) ;
-        System.out.println(pos+" "+codeline);
         return pos;
     }
 
