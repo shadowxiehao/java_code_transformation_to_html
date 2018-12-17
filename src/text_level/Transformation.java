@@ -30,20 +30,20 @@ public class Transformation {
     }
 
     public boolean Main_Transformation() throws Exception {
-        File readin_file = new File(input_file);// 指定要读取的文件
-        File putout_file = new File(output_file);
+        File read_in_file = new File(input_file);// 指定要读取的文件
+        File put_out_file = new File(output_file);
         BufferedReader reader = null;
         PrintWriter output = null;
         try {//这里办正事= =\输出文件
-            reader = new BufferedReader(new FileReader(readin_file));
-            output = new PrintWriter(putout_file);
+            reader = new BufferedReader(new FileReader(read_in_file));
+            output = new PrintWriter(put_out_file);
 
             //这里将html_head+\n先放到文件头部
             output.write(head_process());
 
             // 一次读入一行，直到读入null为文件结束
             String str;
-            String data = new String();
+            String data = "";
             int n = 0;
             while ((str = reader.readLine()) != null) {
                 if (n != 0) {
@@ -66,7 +66,7 @@ public class Transformation {
             if (reader != null) {
                 try {
                     reader.close();
-                } catch (IOException e1) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -75,18 +75,18 @@ public class Transformation {
 
     /**
      * 这里将html_head+\n先放到文件头部
-     * @return
+     * @return 返回处理好的字符串
      */
     private String head_process(){
-        String temp = new String();
+        StringBuilder temp = new StringBuilder();
         for (String str1 : html_head) {
-            if (str1 != "<pre>") {
-                temp += str1 + '\n';
+            if (!str1.equals("<pre>")) {
+                temp.append(str1 + '\n');
             } else {
-                temp += "<pre>";
+                temp.append("<pre>");
             }
         }
-        return temp;
+        return temp.toString();
     }
 
     /**
@@ -95,9 +95,9 @@ public class Transformation {
      * @return 返回处理后的字符串
      */
     private String process(String string) {
-        String final_str = new String();
+        String final_str ;
 
-        string.replace("<", "&lt");//替换java中的“<”为html的显示符
+        //string=string.replace("<", "&lt");//替换java中的“<”为html的显示符
 
         final_str = hlt.highlight(string);//进行代码高亮处理
         final_str += '\n';//最后每行换行
@@ -106,14 +106,14 @@ public class Transformation {
     }
 
     private String tail_process(){
-        String temp = new String();
+        StringBuilder temp = new StringBuilder();
         for (String str2 : html_tail) {
             if (!str2.equals("</html>")) {
-                temp += str2 + '\n';
+                temp.append( str2 + '\n');
             } else {
-                temp += "</html>";
+                temp.append("</html>");
             }
         }
-        return temp;
+        return temp.toString();
     }
 }

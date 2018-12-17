@@ -4,9 +4,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JavaSyntaxHighlighter {
-    private String line;
-    String codeline="" ;
-    String noteline="" ;
+    private int str_pos[] = {0,0};//记录字符串""和''起始和终止位置
+    private String line;//记录输入的整行java源代码并处理
+    private String codeline="" ;//记录分离注释后的代码行
+    private String noteline="" ;//记录注释部分
     private String[] regexkeywords;
     private String[] keywords =
             {"abstract", "assert", "boolean", "break", "byte",
@@ -28,19 +29,18 @@ public class JavaSyntaxHighlighter {
         int n = this.keywords.length;
         regexkeywords = new String[n];
         for (String w : this.keywords) {//这里添加关键字的正则匹配式子
-            this.regexkeywords[i] = "(?<!\\w)";//关键字前面不能有字符
+            this.regexkeywords[i] = "(?<!\\w)(?<!\")(?<!\')";//关键字前面不能有字符,或者字符串标识符"和'
             this.regexkeywords[i] += w;//要匹配的关键字
             this.regexkeywords[i] += "(?!\\w)+?";//关键字后面不能有字符
             i++;
         }
     }
 
-    int note_pos_find(){
+    private int note_pos_find(){
         int pos=line.length();
 
         //用正则模式/(/|\*)(.*)|\*(.*)|(.*)\*/$检查是否为单行注释(//xxx /*xxx*/ *xxx xxx*/)
-        //如果是,highlight_note(self.line)高亮注释部分并返回
-        Pattern p1 = Pattern.compile("^((/(/|\\*))(.*)|(/\\*(.*))|(/(.*)\\*/)|(^\\*.*$))");
+        Pattern p1 = Pattern.compile("^((/([/*]))(.*)|(/\\*(.*))|(/(.*)\\*/)|(^\\*.*$))");
         Matcher find_note1 = p1.matcher(this.line.trim());
         if (find_note1.find()) {
             //处理单行注释;
@@ -48,40 +48,40 @@ public class JavaSyntaxHighlighter {
             return pos;
         }
 
-        Matcher find_note2 = Pattern.compile("((?<=[){};])(.*)/(/|\\*).*$)").matcher(this.line);//查找行尾注释
+        Matcher find_note2 = Pattern.compile("(?<=[){};])(.*?)(/([/*]).*$)").matcher(this.line);//查找行尾注释
         if (find_note2.find()) {
-            pos = find_note2.start();  //标记行尾注释;
+            pos = find_note2.start(2);  //标记行尾注释;
         }
         codeline = this.line.substring(pos) ;
         return pos;
     }
 
-    void highlight_note() {
+    private void highlight_note() {
         //'高亮注释行'
         if (!noteline.equals("")) {  // note为空,表示行尾无注释
             noteline = noteline.replace(noteline, " [note] " + noteline + " [end] ");
         }
     }
 
-    void highlight_string() {
+    private void highlight_string() {
         //'高亮字符串'
 
         //match " 和 '(同时不匹配\"和\'中的"和',防止误判)
-        Matcher m = Pattern.compile("(?<!\\\\)(\\\")(.*?)(?<!\\\\)(\\\")|(?<!\\\\)(\\\')(.*?)(?<!\\\\)(\\\')").matcher(codeline);
+        Matcher m = Pattern.compile("(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')").matcher(codeline);
         while (m.find()) {
             String strlist = m.group();
             codeline = codeline.replace(strlist, " [str] " + strlist + " [end] ");
         }
     }
 
-    void highlight_keyword() {
+    private void highlight_keyword() {
         //'高亮关键字'
         for (int i = 0; i < keywords.length; i++) {
             codeline = codeline.replaceAll(regexkeywords[i], " [key] " + keywords[i] + " [end] ");
         }
     }
 
-    void highlight_operator() {
+    private void highlight_operator() {
         //'高亮运算符'
         char[] opr = {'=', '(', ')', '{', '}', '|', '+', '-', '*', '/', '<', '>'};
         for (char o : opr) {
@@ -109,7 +109,7 @@ public class JavaSyntaxHighlighter {
             return line;
         }  //空串不处理
 
-        int pos = note_pos_find();
+        int pos = note_pos_find();//pos记录注释开始位置,避免对注释处理
         codeline = this.line.substring(0, pos) ;
         noteline = this.line.substring(pos);
 

@@ -14,7 +14,7 @@ class TransformTest {
     public static void main(String[] args){
         //录入文件路径 测试时用
         System.out.print("请输入Java文件路径:");
-        String a ="F:\\study&work\\works\\java\\class_design\\curriculum design\\src\\text_level\\Transformation.java";
+        String a ="F:\\study&work\\works\\java\\class_design\\curriculum design\\src\\text_level\\JavaSyntaxHighlighter.java";
         System.out.println();
         System.out.print("请输入想输出的html文件路径:");
         String b = "F:\\study&work\\works\\java\\class_design\\curriculum design\\src\\text_level\\1.html";
