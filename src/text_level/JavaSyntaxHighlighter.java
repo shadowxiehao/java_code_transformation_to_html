@@ -3,11 +3,17 @@ package text_level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/*
+@author XieHao
+@function 专门进行代码高亮部分处理,找出需高亮部分,并留下记号;但高亮的颜色和样式得到Transformation类中处理
+ */
 public class JavaSyntaxHighlighter {
+    private int pos1=0,pos2=0;//记录注释起始和终止位置
     private int str_pos[] = {0,0};//记录字符串""和''起始和终止位置
     private String line;//记录输入的整行java源代码并处理
     private String codeline="" ;//记录分离注释后的代码行
     private String noteline="" ;//记录注释部分
+    boolean Multiline_comment = false;//判断多行注释时使用
     private String[] regexkeywords;
     private String[] keywords =
             {"abstract", "assert", "boolean", "break", "byte",
@@ -36,24 +42,46 @@ public class JavaSyntaxHighlighter {
         }
     }
 
-    private int note_pos_find(){
-        int pos=line.length();
+    private void note_pos_find(){
+        pos1=line.length();
+        pos2=line.length();//先假设没有注释
+        //判断是否是多行注释
+        Matcher pp1 = Pattern.compile("\\*/").matcher(this.line);
+        Matcher pp2 = Pattern.compile("^/\\*").matcher(this.line.trim());
+        Matcher pp3 = Pattern.compile("(?<=[){};])(\\s*?)(\\*/.*$)").matcher(this.line);
+        if(!Multiline_comment){//如果还不是多行注释,就找多行注释开始标志
+            if(pp2.find()){//查找开头有没有多行注释起始标志
+                pos1 = 0;
+                Multiline_comment =true;
+            }
+            if (pp3.find()){//查找行尾有没有多行注释
+                pos1 = pp3.start(2);
+                Multiline_comment = true;
+            }
+        }
+        if(Multiline_comment){//如果还在多行注释中
+            if(pos1==line.length()){pos1=0;}//如果注释起始地点未改变,仍为最后位置,代表前面没找到多行注释开始标志,也就代表这前面都是多行注释
+            if(pp1.find()) {//找到结束标识符 */
+                pos2 = pp1.end();
+                Multiline_comment = false;
+                return;
+            }
+            else return;
+        }
 
         //用正则模式/(/|\*)(.*)|\*(.*)|(.*)\*/$检查是否为单行注释(//xxx /*xxx*/ *xxx xxx*/)
         Pattern p1 = Pattern.compile("^((/([/*]))(.*)|(/\\*(.*))|(/(.*)\\*/)|(^\\*.*$))");
         Matcher find_note1 = p1.matcher(this.line.trim());
         if (find_note1.find()) {
             //处理单行注释;
-            pos=0;
-            return pos;
+            pos1=0;
+            return ;
         }
 
-        Matcher find_note2 = Pattern.compile("(?<=[){};])(.*?)(/([/*]).*$)").matcher(this.line);//查找行尾注释
+        Matcher find_note2 = Pattern.compile("(?<=[){};])(\\s*?)(//.*$)").matcher(this.line);//查找行尾注释
         if (find_note2.find()) {
-            pos = find_note2.start(2);  //标记行尾注释;
+            pos1 = find_note2.start(2);  //标记行尾注释;
         }
-        codeline = this.line.substring(pos) ;
-        return pos;
     }
 
     private void highlight_note() {
@@ -109,9 +137,9 @@ public class JavaSyntaxHighlighter {
             return line;
         }  //空串不处理
 
-        int pos = note_pos_find();//pos记录注释开始位置,避免对注释处理
-        codeline = this.line.substring(0, pos) ;
-        noteline = this.line.substring(pos);
+        note_pos_find();//pos记录注释开始位置,避免对注释处理
+        noteline = this.line.substring(pos1,pos2) ;
+        codeline = this.line.substring(0,pos1)+this.line.substring(pos2,line.length());
 
         this.highlight_note();  //处理行尾注释;
         this.highlight_keyword(); //处理关键字;
