@@ -8,11 +8,11 @@ import java.util.regex.Pattern;
 @function 专门进行代码高亮部分处理,找出需高亮部分,并留下记号;但高亮的颜色和样式得到Transformation类中处理
  */
 public class JavaSyntaxHighlighter {
-    private int pos1=0,pos2=0;//记录注释起始和终止位置
-    private int str_pos[] = {0,0};//记录字符串""和''起始和终止位置
+    private int pos1 = 0, pos2 = 0;//记录注释起始和终止位置
+    private int str_pos[] = {0, 0};//记录字符串""和''起始和终止位置
     private String line;//记录输入的整行java源代码并处理
-    private String codeline="" ;//记录分离注释后的代码行
-    private String noteline="" ;//记录注释部分
+    private String codeline = "";//记录分离注释后的代码行
+    private String noteline = "";//记录注释部分
     boolean Multiline_comment = false;//判断多行注释时使用
     private String[] regexkeywords;
     private String[] keywords =
@@ -25,9 +25,11 @@ public class JavaSyntaxHighlighter {
                     "new", "package", "private", "protected", "public",
                     "return", "strictfp", "short", "static", "super",
                     "switch", "synchronized", "this", "throws", "throws",
-                    "transient", "try", "void", "volatile", "while"};
+                    "transient", "try", "void", "volatile", "while","String"};
 
-
+    /*
+    构造函数
+     */
     public JavaSyntaxHighlighter() {
         this.line = ""; // 保存当前处理的行
 
@@ -42,31 +44,32 @@ public class JavaSyntaxHighlighter {
         }
     }
 
-    private void note_pos_find(){
-        pos1=line.length();
-        pos2=line.length();//先假设没有注释
+    private void note_pos_find() {
+        pos1 = line.length();
+        pos2 = line.length();//先假设没有注释
         //判断是否是多行注释
         Matcher pp1 = Pattern.compile("\\*/").matcher(this.line);
         Matcher pp2 = Pattern.compile("^/\\*").matcher(this.line.trim());
         Matcher pp3 = Pattern.compile("(?<=[){};])(\\s*?)(\\*/.*$)").matcher(this.line);
-        if(!Multiline_comment){//如果还不是多行注释,就找多行注释开始标志
-            if(pp2.find()){//查找开头有没有多行注释起始标志
+        if (!Multiline_comment) {//如果还不是多行注释,就找多行注释开始标志
+            if (pp2.find()) {//查找开头有没有多行注释起始标志
                 pos1 = 0;
-                Multiline_comment =true;
+                Multiline_comment = true;
             }
-            if (pp3.find()){//查找行尾有没有多行注释
+            if (pp3.find()) {//查找行尾有没有多行注释
                 pos1 = pp3.start(2);
                 Multiline_comment = true;
             }
         }
-        if(Multiline_comment){//如果还在多行注释中
-            if(pos1==line.length()){pos1=0;}//如果注释起始地点未改变,仍为最后位置,代表前面没找到多行注释开始标志,也就代表这前面都是多行注释
-            if(pp1.find()) {//找到结束标识符 */
+        if (Multiline_comment) {//如果还在多行注释中
+            if (pos1 == line.length()) {
+                pos1 = 0;
+            }//如果注释起始地点未改变,仍为最后位置,代表前面没找到多行注释开始标志,也就代表这前面都是多行注释
+            if (pp1.find()) {//找到结束标识符 */
                 pos2 = pp1.end();
                 Multiline_comment = false;
                 return;
-            }
-            else return;
+            } else return;
         }
 
         //用正则模式/(/|\*)(.*)|\*(.*)|(.*)\*/$检查是否为单行注释(//xxx /*xxx*/ *xxx xxx*/)
@@ -74,8 +77,8 @@ public class JavaSyntaxHighlighter {
         Matcher find_note1 = p1.matcher(this.line.trim());
         if (find_note1.find()) {
             //处理单行注释;
-            pos1=0;
-            return ;
+            pos1 = 0;
+            return;
         }
 
         Matcher find_note2 = Pattern.compile("(?<=[){};])(\\s*?)(//.*$)").matcher(this.line);//查找行尾注释
@@ -111,14 +114,49 @@ public class JavaSyntaxHighlighter {
 
     private void highlight_operator() {
         //'高亮运算符'
-        char[] opr = {'=', '(', ')', '{', '}', '|', '+', '-', '*', '/', '<', '>'};
-        for (char o : opr) {
-            String temp = " [opr] " + o + " [end] ";
-            String str_o = o + "";
-            codeline = codeline.replace(str_o, temp);  // 实现非注释的运算符高亮
+        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "/", "<", ">","&&","||","&","|","!","~"};
+        Matcher m0 = Pattern.compile("(?<=(\\s\\[str\\]\\s))(.*?)(?=(\\s\\[end\\]\\s))").matcher(codeline);//判断是否夹着字符串
+        Matcher m1 = Pattern.compile("(?<!((\\s\\[end\\]\\s))(?<!(\\s\\[str\\]\\s)))(.*?)(?=(\\s\\[str\\]\\s))").matcher(codeline);//字符串的前面
+        Matcher m2 = Pattern.compile("(?<=(\\s\\[end\\]\\s))(.*?)(?=(\\s\\[str\\]\\s))").matcher(codeline);//被字符串夹着的地方
+        Matcher m3 = Pattern.compile("(?<=(\\s\\[end\\]\\s))(.*?)(?!((\\s\\[end\\]\\s)|(\\s\\[str\\]\\s)))").matcher(codeline);//字符串的后面
+
+
+        if (m0.find()) {
+            //先提取非字符串中的字符,修改后,用replace将其替换
+            if (m1.find()) {
+                String str_temp = m1.group();
+                for (String o : opr) {
+                    String temp = " [opr] " + o + " [end] ";
+
+                    str_temp = str_temp.replace(o + "", temp);
+                    codeline = codeline.replace(m1.group(), str_temp);
+                }
+            }
+            while (m2.find()) {
+                String str_temp = m2.group();
+                for (String o : opr) {
+                    String temp = " [opr] " + o + " [end] ";
+
+                    str_temp = str_temp.replace(o + "", temp);
+                    codeline = codeline.replace(m2.group(), str_temp);
+                }
+            }
+            if (m3.find()) {
+                String str_temp = m3.group();
+                for (String o : opr) {
+                    String temp = " [opr] " + o + " [end] ";
+
+                    str_temp = str_temp.replace(o + "", temp);
+                    codeline = codeline.replace(m3.group(), str_temp);
+                }
+            }
+        } else {
+            for (String o : opr) {
+                String temp = " [opr] " + o + " [end] ";
+                codeline = codeline.replace(o + "", temp);  // 实现非注释并且没有字符串的运算符高亮
+            }
         }
     }
-
 
     String translate(String data) {
         //'转换为html标签'
@@ -138,14 +176,14 @@ public class JavaSyntaxHighlighter {
         }  //空串不处理
 
         note_pos_find();//pos记录注释开始位置,避免对注释处理
-        noteline = this.line.substring(pos1,pos2) ;
-        codeline = this.line.substring(0,pos1)+this.line.substring(pos2,line.length());
+        noteline = this.line.substring(pos1, pos2);
+        codeline = this.line.substring(0, pos1) + this.line.substring(pos2, line.length());
 
-        this.highlight_note();  //处理行尾注释;
-        this.highlight_keyword(); //处理关键字;
-        this.highlight_string(); //处理字符串;
-        this.highlight_operator();  //处理运算符;
+        this.highlight_note();  //处理行尾注释
+        this.highlight_keyword(); //处理关键字
+        this.highlight_string(); //处理字符串
+        this.highlight_operator();  //处理运算符
 
-        return codeline+noteline;  //返回处理好的行;
+        return codeline + noteline;  //返回处理好的行
     }
 }
