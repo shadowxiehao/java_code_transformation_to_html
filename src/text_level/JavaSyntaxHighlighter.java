@@ -13,34 +13,49 @@ public class JavaSyntaxHighlighter {
     private String line;//记录输入的整行java源代码并处理
     private String codeline = "";//记录分离注释后的代码行
     private String noteline = "";//记录注释部分
-    boolean Multiline_comment = false;//判断多行注释时使用
-    private String[] regexkeywords;
-    private String[] keywords =
-            {"abstract", "assert", "boolean", "break", "byte",
-                    "case", "catch", "char", "class", "const",
-                    "continue", "default", "do", "double", "else",
-                    "enum", "extends", "final", "finally", "float",
-                    "for", "goto", "if", "implements", "import",
-                    "instanceof", "int", "interface", "long", "native",
-                    "new", "package", "private", "protected", "public",
-                    "return", "strictfp", "short", "static", "super",
-                    "switch", "synchronized", "this", "throws", "throws",
-                    "transient", "try", "void", "volatile", "while","String"};
+    private boolean Multiline_comment = false;//判断多行注释时使用
+    private String[][] regexkeywords;
+    private String[][] keywords =
+            {
+                    {"abstract", "assert", "break",
+                            "case", "catch", "class", "const",
+                            "continue", "default", "do", "else",
+                            "enum", "extends", "for", "goto", "if", "implements", "import",
+                            "instanceof", "interface", "native",
+                            "new", "package", "private", "protected", "public",
+                            "return", "strictfp", "static", "super",
+                            "switch", "synchronized", "this", "throws", "throws",
+                            "transient", "try", "volatile", "while","break","null"
+                    },
+
+                    {"boolean", "char", "float", "int", "long", "short", "void",
+                            "final", "finally", "String", "double", "StringBuffer", "StringBuilder", "var","byte","Object",
+                            "HashAttributeSet", "HashDocAttributeSet", "HashMap", "HashPrintJobAttributeSet", "HashPrintRequestAttributeSet", "HashPrintServiceAttributeSet", "HashSet"
+                    },
+                    {"toString","length","matcher","Pattern","compile","Matcher","replace",
+                            "replaceAll","group","equals","start","find","continue","extends","append",
+                            "_BindingIteratorImplBase","_BindingIteratorStub","_NamingContextImplBase","_NamingContextStub","_PolicyStub","_Remote_Stub","_ServantActivatorStub","_ServantLocatorStub"
+                    },
+                    {"false"},
+                    {"true"}
+            };
 
     /*
     构造函数
      */
     public JavaSyntaxHighlighter() {
         this.line = ""; // 保存当前处理的行
-
-        int i = 0;
-        int n = this.keywords.length;
-        regexkeywords = new String[n];
-        for (String w : this.keywords) {//这里添加关键字的正则匹配式子
-            this.regexkeywords[i] = "(?<!\\w)(?<!\")(?<!\')";//关键字前面不能有字符,或者字符串标识符"和'
-            this.regexkeywords[i] += w;//要匹配的关键字
-            this.regexkeywords[i] += "(?!\\w)+?";//关键字后面不能有字符
-            i++;
+        regexkeywords = new String[keywords.length][keywords[0].length];
+        for (int i = 0; i < keywords.length; i++) {
+            int j = 0;
+            for (String w : keywords[i]) {//这里添加关键字的正则匹配式子
+                if(w!=null) {
+                    regexkeywords[i][j] = "(?<!\\w)(?<!\")(?<!\")(?<!\')";//关键字前面不能有字符,或者字符串标识符"和'
+                    regexkeywords[i][j] += w;//要匹配的关键字
+                    regexkeywords[i][j] += "(?!\\w)+?";//关键字后面不能有字符
+                }
+                j++;
+            }
         }
     }
 
@@ -107,14 +122,18 @@ public class JavaSyntaxHighlighter {
 
     private void highlight_keyword() {
         //'高亮关键字'
-        for (int i = 0; i < keywords.length; i++) {
-            codeline = codeline.replaceAll(regexkeywords[i], " [key] " + keywords[i] + " [end] ");
+        for (int i = 0; i < regexkeywords.length; i++) {
+            for (int j = 0; j < regexkeywords[i].length; j++) {
+                if (regexkeywords[i][j] != null) {
+                    codeline = codeline.replaceAll(regexkeywords[i][j], " [key" + (i+1) + "] " + keywords[i][j] + " [end] ");
+                }
+            }
         }
     }
 
     private void highlight_operator() {
         //'高亮运算符'
-        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "/", "<", ">","&&","||","&","|","!","~","[]",";"};
+        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "/", "<", ">", "&&", "||", "&", "|", "!", "~", "[]", ";","!",":","."};
         Matcher m0 = Pattern.compile("(?<=([ ]\\[str\\][ ]))(.*?)(?=([ ]\\[end\\][ ]))").matcher(codeline);//判断是否夹着字符串
         Matcher m1 = Pattern.compile("(?<!(([ ]\\[end\\][ ]))(?<!([ ]\\[str\\][ ])))(.*?)(?=([ ]\\[str\\][ ]))").matcher(codeline);//字符串的前面
         Matcher m2 = Pattern.compile("([ ]\\[end\\][ ])(.*?)([ ]\\[str\\][ ])").matcher(codeline);//被字符串夹着的地方
@@ -140,13 +159,12 @@ public class JavaSyntaxHighlighter {
                     str_temp = str_temp.replace(o + "", temp);
                     codeline = codeline.replace(m2.group(2), str_temp);
                 }
-                System.out.println(str_temp);
             }
             if (m3.find()) {
                 String str_temp = m3.group(3);
                 for (String o : opr) {
                     String temp = " [opr] " + o + " [end] ";
-                    str_temp = str_temp.replace(o , temp);
+                    str_temp = str_temp.replace(o, temp);
                     codeline = codeline.replace(m3.group(3), str_temp);
                 }
 
@@ -159,9 +177,9 @@ public class JavaSyntaxHighlighter {
         }
     }
 
-    String translate(String data) {
+    public String translate(String data) {
         //'转换为html标签'
-        String[] name = {"note", "key", "str", "opr"};
+        String[] name = {"note", "key1","key2", "key3", "key4", "key5", "str", "opr"};
         for (String n : name) {
             data = data.replace(" [" + n + "] ", "<span class=\'" + n + "\'>");
         }
@@ -184,7 +202,6 @@ public class JavaSyntaxHighlighter {
         this.highlight_keyword(); //处理关键字
         this.highlight_string(); //处理字符串
         this.highlight_operator();  //处理运算符
-
         return codeline + noteline;  //返回处理好的行
     }
 }
