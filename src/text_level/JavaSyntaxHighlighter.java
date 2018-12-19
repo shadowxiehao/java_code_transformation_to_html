@@ -32,8 +32,8 @@ public class JavaSyntaxHighlighter {
                             "final", "finally", "String", "double", "StringBuffer", "StringBuilder", "var","byte","Object",
                             "HashAttributeSet", "HashDocAttributeSet", "HashMap", "HashPrintJobAttributeSet", "HashPrintRequestAttributeSet", "HashPrintServiceAttributeSet", "HashSet"
                     },
-                    {"toString","length","matcher","Pattern","compile","Matcher","replace",
-                            "replaceAll","group","equals","start","find","continue","extends","append",
+                    {"toString","length","matcher","Pattern","compile","Matcher","replace","trim","print","println",
+                            "replaceAll","group","equals","start","find","continue","extends","append","split",
                             "_BindingIteratorImplBase","_BindingIteratorStub","_NamingContextImplBase","_NamingContextStub","_PolicyStub","_Remote_Stub","_ServantActivatorStub","_ServantLocatorStub"
                     },
                     {"false"},
@@ -50,9 +50,9 @@ public class JavaSyntaxHighlighter {
             int j = 0;
             for (String w : keywords[i]) {//这里添加关键字的正则匹配式子
                 if(w!=null) {
-                    regexkeywords[i][j] = "(?<!\\w)(?<!\")(?<!\")(?<!\')";//关键字前面不能有字符,或者字符串标识符"和'
+                    regexkeywords[i][j] = "(?<!\\w)";//关键字前面不能有字符,或者字符串标识符"和'
                     regexkeywords[i][j] += w;//要匹配的关键字
-                    regexkeywords[i][j] += "(?!\\w)+?";//关键字后面不能有字符
+                    regexkeywords[i][j] += "(?!\\w)";//关键字后面不能有字符
                 }
                 j++;
             }
@@ -122,10 +122,14 @@ public class JavaSyntaxHighlighter {
 
     private void highlight_keyword() {
         //'高亮关键字'
-        for (int i = 0; i < regexkeywords.length; i++) {
-            for (int j = 0; j < regexkeywords[i].length; j++) {
-                if (regexkeywords[i][j] != null) {
-                    codeline = codeline.replaceAll(regexkeywords[i][j], " [key" + (i+1) + "] " + keywords[i][j] + " [end] ");
+        String[] str_temp = codeline.split("(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')");
+        for(String temp:str_temp) {
+            for (int i = 0; i < regexkeywords.length; i++) {
+                for (int j = 0; j < regexkeywords[i].length; j++) {
+                    if (regexkeywords[i][j] != null) {
+                        codeline = codeline.replace(temp, temp.replaceAll(regexkeywords[i][j]," [key" + (i + 1) + "] " + keywords[i][j] + " [end] "));
+                        temp = temp.replaceAll(regexkeywords[i][j]," [key" + (i + 1) + "] " + keywords[i][j] + " [end] ");
+                    }
                 }
             }
         }
@@ -133,46 +137,13 @@ public class JavaSyntaxHighlighter {
 
     private void highlight_operator() {
         //'高亮运算符'
-        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "/", "<", ">", "&&", "||", "&", "|", "!", "~", "[]", ";","!",":","."};
-        Matcher m0 = Pattern.compile("(?<=([ ]\\[str\\][ ]))(.*?)(?=([ ]\\[end\\][ ]))").matcher(codeline);//判断是否夹着字符串
-        Matcher m1 = Pattern.compile("(?<!(([ ]\\[end\\][ ]))(?<!([ ]\\[str\\][ ])))(.*?)(?=([ ]\\[str\\][ ]))").matcher(codeline);//字符串的前面
-        Matcher m2 = Pattern.compile("([ ]\\[end\\][ ])(.*?)([ ]\\[str\\][ ])").matcher(codeline);//被字符串夹着的地方
-        Matcher m3 = Pattern.compile("(.*)([ ]\\[end\\][ ])(.*)(?!(([ ]\\[end\\][ ])|([ ]\\[str\\][ ])))").matcher(codeline);//字符串的后面
+        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "/", "<", ">", "&", "|", "!", "~", "[]", ";","!",":","."};
 
-
-        if (m0.find()) {
-            //先提取非字符串中的字符,修改后,用replace将其替换
-            if (m1.find()) {
-                String str_temp = m1.group();
-                for (String o : opr) {
-                    String temp = " [opr] " + o + " [end] ";
-
-                    str_temp = str_temp.replace(o + "", temp);
-                    codeline = codeline.replace(m1.group(), str_temp);
-                }
-            }
-            while (m2.find()) {
-                String str_temp = m2.group(2);
-                for (String o : opr) {
-                    String temp = " [opr] " + o + " [end] ";
-
-                    str_temp = str_temp.replace(o + "", temp);
-                    codeline = codeline.replace(m2.group(2), str_temp);
-                }
-            }
-            if (m3.find()) {
-                String str_temp = m3.group(3);
-                for (String o : opr) {
-                    String temp = " [opr] " + o + " [end] ";
-                    str_temp = str_temp.replace(o, temp);
-                    codeline = codeline.replace(m3.group(3), str_temp);
-                }
-
-            }
-        } else {
+        String[] str_temp = codeline.split("(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')");
+        for(String temp:str_temp) {
             for (String o : opr) {
-                String temp = " [opr] " + o + " [end] ";
-                codeline = codeline.replace(o + "", temp);  // 实现非注释并且没有字符串的运算符高亮
+                codeline = codeline.replace(temp, temp.replace(o, " [opr] " + o + " [end] "));
+                temp = temp.replace(o, " [opr] " + o + " [end] ");
             }
         }
     }
@@ -200,8 +171,8 @@ public class JavaSyntaxHighlighter {
 
         this.highlight_note();  //处理行尾注释
         this.highlight_keyword(); //处理关键字
-        this.highlight_string(); //处理字符串
         this.highlight_operator();  //处理运算符
+        this.highlight_string(); //处理字符串
         return codeline + noteline;  //返回处理好的行
     }
 }
