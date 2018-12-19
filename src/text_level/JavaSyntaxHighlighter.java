@@ -114,11 +114,11 @@ public class JavaSyntaxHighlighter {
 
     private void highlight_operator() {
         //'高亮运算符'
-        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "/", "<", ">","&&","||","&","|","!","~"};
-        Matcher m0 = Pattern.compile("(?<=(\\s\\[str\\]\\s))(.*?)(?=(\\s\\[end\\]\\s))").matcher(codeline);//判断是否夹着字符串
-        Matcher m1 = Pattern.compile("(?<!((\\s\\[end\\]\\s))(?<!(\\s\\[str\\]\\s)))(.*?)(?=(\\s\\[str\\]\\s))").matcher(codeline);//字符串的前面
-        Matcher m2 = Pattern.compile("(?<=(\\s\\[end\\]\\s))(.*?)(?=(\\s\\[str\\]\\s))").matcher(codeline);//被字符串夹着的地方
-        Matcher m3 = Pattern.compile("(?<=(\\s\\[end\\]\\s))(.*?)(?!((\\s\\[end\\]\\s)|(\\s\\[str\\]\\s)))").matcher(codeline);//字符串的后面
+        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "/", "<", ">","&&","||","&","|","!","~","[]",";"};
+        Matcher m0 = Pattern.compile("(?<=([ ]\\[str\\][ ]))(.*?)(?=([ ]\\[end\\][ ]))").matcher(codeline);//判断是否夹着字符串
+        Matcher m1 = Pattern.compile("(?<!(([ ]\\[end\\][ ]))(?<!([ ]\\[str\\][ ])))(.*?)(?=([ ]\\[str\\][ ]))").matcher(codeline);//字符串的前面
+        Matcher m2 = Pattern.compile("([ ]\\[end\\][ ])(.*?)([ ]\\[str\\][ ])").matcher(codeline);//被字符串夹着的地方
+        Matcher m3 = Pattern.compile("(.*)([ ]\\[end\\][ ])(.*)(?!(([ ]\\[end\\][ ])|([ ]\\[str\\][ ])))").matcher(codeline);//字符串的后面
 
 
         if (m0.find()) {
@@ -133,22 +133,23 @@ public class JavaSyntaxHighlighter {
                 }
             }
             while (m2.find()) {
-                String str_temp = m2.group();
+                String str_temp = m2.group(2);
                 for (String o : opr) {
                     String temp = " [opr] " + o + " [end] ";
 
                     str_temp = str_temp.replace(o + "", temp);
-                    codeline = codeline.replace(m2.group(), str_temp);
+                    codeline = codeline.replace(m2.group(2), str_temp);
                 }
+                System.out.println(str_temp);
             }
             if (m3.find()) {
-                String str_temp = m3.group();
+                String str_temp = m3.group(3);
                 for (String o : opr) {
                     String temp = " [opr] " + o + " [end] ";
-
-                    str_temp = str_temp.replace(o + "", temp);
-                    codeline = codeline.replace(m3.group(), str_temp);
+                    str_temp = str_temp.replace(o , temp);
+                    codeline = codeline.replace(m3.group(3), str_temp);
                 }
+
             }
         } else {
             for (String o : opr) {

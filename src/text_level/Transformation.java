@@ -23,6 +23,14 @@ public class Transformation {
             "</style>", "</head>", "<body>", "<pre>"};
     private String[] html_tail = {"</pre>", "</body>", "</html>"};
 
+    public String[] getHtml_head() {
+        return html_head;
+    }
+
+    public void setHtml_head(String[] html_head) {
+        this.html_head = html_head;
+    }
+
     public Transformation(String input_file, String output_file) throws Exception {
 
         this.input_file = input_file;
