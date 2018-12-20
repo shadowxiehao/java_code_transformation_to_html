@@ -194,7 +194,6 @@ public class JavaSyntaxHighlighter {
             }
         }
         codeline = codelineBuffer.toString();
-        System.out.println(codeline);//test
     }
 
     public String translate(String data) {
