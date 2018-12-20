@@ -15,6 +15,8 @@ public class JavaSyntaxHighlighter {
     private String codeline = "";//记录分离注释后的代码行
     private String noteline = "";//记录注释部分
     private boolean Multiline_comment = false;//判断多行注释时使用
+    private String str_regex = "(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')";//判断字符串的正则表达式
+
     private String[][] regexkeywords;
     private String[][] keywords =
             {
@@ -114,7 +116,7 @@ public class JavaSyntaxHighlighter {
         //'高亮字符串'
 
         //match " 和 '(同时不匹配\"和\'中的"和',防止误判)
-        Matcher m = Pattern.compile("(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')").matcher(codeline);
+        Matcher m = Pattern.compile(str_regex).matcher(codeline);
         while (m.find()) {
             String strlist = m.group();
             codeline = codeline.replace(strlist, " [str] " + strlist + " [end] ");
@@ -123,30 +125,60 @@ public class JavaSyntaxHighlighter {
 
     private void highlight_keyword() {
         //'高亮关键字'
-        String[] str_temp = codeline.split("(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')");
+        String[] str_temp = codeline.split(str_regex);
+        Matcher m = Pattern.compile(str_regex).matcher(codeline);
+        Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
+        int n=0;
+        while (m.find()){n++;}
+        String[] str = new String[n];//记录字符串
+        n=0;
+        while (m2.find()) {
+            str[n++]=m2.group();
+        }
+        n=0;
+        StringBuffer codelineBuffer = new StringBuffer();
         for(String temp:str_temp) {
             for (int i = 0; i < regexkeywords.length; i++) {
                 for (int j = 0; j < regexkeywords[i].length; j++) {
                     if (regexkeywords[i][j] != null) {
-                        codeline = codeline.replace(temp, temp.replaceAll(regexkeywords[i][j]," [key" + (i + 1) + "] " + keywords[i][j] + " [end] "));
                         temp = temp.replaceAll(regexkeywords[i][j]," [key" + (i + 1) + "] " + keywords[i][j] + " [end] ");
                     }
                 }
             }
+            codelineBuffer.append(temp);
+            if(n<str.length) {
+                codelineBuffer.append(str[n++]);
+            }
         }
+        codeline = codelineBuffer.toString();
     }
 
     private void highlight_operator() {
         //'高亮运算符'
         String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "%", "/", "<", ">", "&", "|", "!", "~", "[]", ";","!",":",".", ","};
-
-        String[] str_temp = codeline.split("(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')");
+        Matcher m = Pattern.compile(str_regex).matcher(codeline);
+        Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
+        String[] str_temp = codeline.split(str_regex);//记录非字符串
+        int n=0;
+        while (m.find()){n++;}
+        String[] str = new String[n];//记录字符串
+        n=0;
+        while (m2.find()) {
+            str[n++]=m2.group();
+        }
+        n=0;
+        StringBuffer codelineBuffer = new StringBuffer();
         for(String temp:str_temp) {
             for (String o : opr) {
-                codeline = codeline.replace(temp, temp.replace(o, " [opr] " + o + " [end] "));
                 temp = temp.replace(o, " [opr] " + o + " [end] ");
             }
+            codelineBuffer.append(temp);
+            if(n<str.length) {
+                codelineBuffer.append(str[n++]);
+            }
         }
+        codeline = codelineBuffer.toString();
+        System.out.println(codeline);//test
     }
 
     public String translate(String data) {

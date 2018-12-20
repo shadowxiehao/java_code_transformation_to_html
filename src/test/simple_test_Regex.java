@@ -13,20 +13,17 @@ public class simple_test_Regex {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-        String[] input=new String[4];
-        input[1] = " import";
-         input[2] = " import ";
-        input[3] = "import";
-        input[4] = "import ";
-        System.out.println();
-        for(int i=0;i<4;i++) {
-            Matcher m = Pattern.compile("(?<=\\s)*?.*").matcher(input[i]);
-            while (m.find()) {
-                //input = input.replaceAll("(?<=\\s)*?import(?=\\s)*?", " [key] ");
-                System.out.println(i);
-                System.out.println("起点为: " + m.start());
-            }
+        //match " 和 '(同时不匹配\"和\'中的"和',防止误判)
+        String n = "\" [key\" + (i + 1) + \"] \" + keywords[i][j] + \"\"";
+        String regex = "(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')";
+        String codeline = "String[] opr = {\"=\", \"(\", \")\", \"{\", \"}\", \"|\", \"+\", \"-\", \"*\", \"%\", \"/\", \"<\", \">\", \"&\", \"|\", \"!\", \"~\", \"[]\", \";\",\"!\",\":\",\".\", \",\"};";
+        String[] str_temp = codeline.split(regex);
+        int a=0;
+        for(String str : str_temp){
+            a++;
+            System.out.println(a+" "+str);
         }
     }
 }
+
 

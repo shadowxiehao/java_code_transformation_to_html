@@ -25,7 +25,7 @@ public class Transformation extends JavaSyntaxHighlighter{
             ".str{color:#EE7600;font-weight:bold;}",
             ".opr{color:#F000B2;font-weight:bolder;}",
             "</style>", "</head>", "<body>", "<pre>"};
-    private String[] html_tail = {"</pre>", "</body>", "</html>"};
+    private String[] html_tail = {"</pre>", "</body>", "</html>"};//html尾文件,会添加到html的最后,作为标记格式设置的结束
 
     public String[] getHtml_tail() {
         return html_tail;
@@ -50,11 +50,16 @@ public class Transformation extends JavaSyntaxHighlighter{
         }
     }
 
+    /**
+     * 运行这里开始进行 文本格式 转 代码高亮的html格式
+     * @throws Exception 文件读取可能错误
+     * @return 如果成功运行,无错误,返回ture
+     */
     public boolean Main_Transformation() throws Exception {
         File read_in_file = new File(input_file);// 指定要读取的文件
         File put_out_file = new File(output_file);
         BufferedReader reader = null;
-        PrintWriter output = null;
+        PrintWriter output ;
         try {//这里办正事= =\输出文件
             reader = new BufferedReader(new FileReader(read_in_file));
             output = new PrintWriter(put_out_file);
@@ -83,8 +88,9 @@ public class Transformation extends JavaSyntaxHighlighter{
             reader.close();//关闭输入
             output.close();//关闭输出
 
-        } catch (IOException e) {//这里处理异常
+        } catch (Exception e) {//这里处理异常
             e.printStackTrace();
+            return false;
         } finally {
             if (reader != null) {
                 try {
@@ -92,8 +98,8 @@ public class Transformation extends JavaSyntaxHighlighter{
                 } catch (IOException ignored) {
                 }
             }
+            return true;
         }
-        return true;
     }
 
     /**
