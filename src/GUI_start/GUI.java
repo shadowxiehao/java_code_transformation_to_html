@@ -286,7 +286,7 @@ public class GUI extends JFrame implements ActionListener {
 		for(i = 1; i < fontList.length; i++) {
 			cbxFont.addItem(fontList[i]);
 		}
-		for(i = 9; i <= 72; i++) {
+		for(i = 13; i <= 72; i++) {
 			cbxFontSize.addItem(i);
 		}
 	}
