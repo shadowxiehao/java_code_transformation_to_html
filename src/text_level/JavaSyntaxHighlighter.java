@@ -26,19 +26,19 @@ public class JavaSyntaxHighlighter {
                             "new", "package", "private", "protected", "public",
                             "return", "strictfp", "static", "super",
                             "switch", "synchronized", "this", "throws", "throws",
-                            "transient", "try", "volatile", "while","break","null"
+                            "transient", "try", "volatile", "while", "break", "null"
                     },
 
                     {"boolean", "char", "float", "int", "long", "short", "void",
-                            "final", "finally", "String", "double", "StringBuffer", "StringBuilder", "var","byte","Object",
+                            "final", "finally", "String", "double", "StringBuffer", "StringBuilder", "var", "byte", "Object",
                             "HashAttributeSet", "HashDocAttributeSet", "HashMap", "HashPrintJobAttributeSet", "HashPrintRequestAttributeSet", "HashPrintServiceAttributeSet", "HashSet"
                     },
-                    {"toString","length","matcher","Pattern","compile","Matcher","replace","trim","print","println",
-                            "replaceAll","group","equals","start","find","continue","extends","append","split","substring",
-                            "_BindingIteratorImplBase","_BindingIteratorStub","_NamingContextImplBase","_NamingContextStub","_PolicyStub","_Remote_Stub","_ServantActivatorStub","_ServantLocatorStub"
+                    {"toString", "length", "matcher", "Pattern", "compile", "Matcher", "replace", "trim", "print", "println",
+                            "replaceAll", "group", "equals", "start", "find", "continue", "extends", "append", "split", "substring",
+                            "_BindingIteratorImplBase", "_BindingIteratorStub", "_NamingContextImplBase", "_NamingContextStub", "_PolicyStub", "_Remote_Stub", "_ServantActivatorStub", "_ServantLocatorStub"
                     },
                     {"false"},
-                    {"true"}
+                    {"true"},
             };
 
     /*
@@ -50,7 +50,7 @@ public class JavaSyntaxHighlighter {
         for (int i = 0; i < keywords.length; i++) {
             int j = 0;
             for (String w : keywords[i]) {//这里添加关键字的正则匹配式子
-                if(w!=null) {
+                if (w != null) {
                     regexkeywords[i][j] = "(?<!\\w)";//关键字前面不能有字符,或者字符串标识符"和'
                     regexkeywords[i][j] += w;//要匹配的关键字
                     regexkeywords[i][j] += "(?!\\w)";//关键字后面不能有字符
@@ -106,7 +106,7 @@ public class JavaSyntaxHighlighter {
     private void highlight_note() {
         //'高亮注释行'
         if (!noteline.equals("")) {  // note为空,表示行尾无注释
-            noteline = noteline.replace(noteline, " [note] " + noteline + " [end] ");
+            noteline = noteline.replace(noteline, " `note` " + noteline + " `end` ");
         }
     }
 
@@ -116,22 +116,24 @@ public class JavaSyntaxHighlighter {
         String[] str_temp = codeline.split(str_regex);
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
         Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
-        int n=0;
-        while (m.find()){n++;}
-        String[] str = new String[n];//记录字符串
-        n=0;
-        while (m2.find()) {
-            str[n++]=m2.group();
+        int n = 0;
+        while (m.find()) {
+            n++;
         }
-        n=0;
+        String[] str = new String[n];//记录字符串
+        n = 0;
+        while (m2.find()) {
+            str[n++] = m2.group();
+        }
+        n = 0;
         StringBuffer codelineBuffer = new StringBuffer();
-        for(String temp:str){
-            if(n<str_temp.length){
+        for (String temp : str) {
+            if (n < str_temp.length) {
                 codelineBuffer.append(str_temp[n++]);
             }
-            codelineBuffer.append(" [str] "+ temp +" [end] ");
+            codelineBuffer.append(" `str` " + temp + " `end` ");
         }
-        if(n<str_temp.length){
+        if (n < str_temp.length) {
             codelineBuffer.append(str_temp[n++]);
         }
         codeline = codelineBuffer.toString();
@@ -142,25 +144,56 @@ public class JavaSyntaxHighlighter {
         String[] str_temp = codeline.split(str_regex);
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
         Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
-        int n=0;
-        while (m.find()){n++;}
-        String[] str = new String[n];//记录字符串
-        n=0;
-        while (m2.find()) {
-            str[n++]=m2.group();
+        int n = 0;
+        while (m.find()) {
+            n++;
         }
-        n=0;
+        String[] str = new String[n];//记录字符串
+        n = 0;
+        while (m2.find()) {
+            str[n++] = m2.group();
+        }
+        n = 0;
         StringBuffer codelineBuffer = new StringBuffer();
-        for(String temp:str_temp) {
+        for (String temp : str_temp) {
             for (int i = 0; i < regexkeywords.length; i++) {
                 for (int j = 0; j < regexkeywords[i].length; j++) {
                     if (regexkeywords[i][j] != null) {
-                        temp = temp.replaceAll(regexkeywords[i][j]," [key" + (i + 1) + "] " + keywords[i][j] + " [end] ");
+                        temp = temp.replaceAll(regexkeywords[i][j], " `key" + (i + 1) + "` " + keywords[i][j] + " `end` ");
                     }
                 }
             }
             codelineBuffer.append(temp);
-            if(n<str.length) {
+            if (n < str.length) {
+                codelineBuffer.append(str[n++]);
+            }
+        }
+        codeline = codelineBuffer.toString();
+    }
+
+    private void highlight_numbers() {
+        //高亮数字
+        String[] str_temp = codeline.split(str_regex);
+        Matcher m = Pattern.compile(str_regex).matcher(codeline);
+        Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
+        int n = 0;
+        while (m.find()) {
+            n++;
+        }
+        String[] str = new String[n];//记录字符串
+        n = 0;
+        while (m2.find()) {
+            str[n++] = m2.group();
+        }
+        n = 0;
+        StringBuffer codelineBuffer = new StringBuffer();
+        for (String temp : str_temp) {
+            Matcher num = Pattern.compile("(?<!\\w)(?<![_])(\\d+)(?!\\w)").matcher(temp);
+            while (num.find()) {
+                temp = temp.replace(m.group()," `number` "+m.group()+" `end` ");
+            }
+            codelineBuffer.append(temp);
+            if (n < str.length) {
                 codelineBuffer.append(str[n++]);
             }
         }
@@ -169,25 +202,27 @@ public class JavaSyntaxHighlighter {
 
     private void highlight_operator() {
         //'高亮运算符'
-        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "%", "/", "<", ">", "&", "|", "!", "~", "[]", ";","!",":",".", ","};
+        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "%", "/", "<", ">", "&", "|", "!", "~", "[", "]", ";", "!", ":", ".", ","};
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
         Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
         String[] str_temp = codeline.split(str_regex);//记录非字符串
-        int n=0;
-        while (m.find()){n++;}
-        String[] str = new String[n];//记录字符串
-        n=0;
-        while (m2.find()) {
-            str[n++]=m2.group();
+        int n = 0;
+        while (m.find()) {
+            n++;
         }
-        n=0;
+        String[] str = new String[n];//记录字符串
+        n = 0;
+        while (m2.find()) {
+            str[n++] = m2.group();
+        }
+        n = 0;
         StringBuffer codelineBuffer = new StringBuffer();
-        for(String temp:str_temp) {
+        for (String temp : str_temp) {
             for (String o : opr) {
-                temp = temp.replace(o, " [opr] " + o + " [end] ");
+                temp = temp.replace(o, " `opr` " + o + " `end` ");
             }
             codelineBuffer.append(temp);
-            if(n<str.length) {
+            if (n < str.length) {
                 codelineBuffer.append(str[n++]);
             }
         }
@@ -196,11 +231,11 @@ public class JavaSyntaxHighlighter {
 
     public String translate(String data) {
         //'转换为html标签'
-        String[] name = {"note", "key1","key2", "key3", "key4", "key5", "str", "opr"};
+        String[] name = {"note", "key1", "key2", "key3", "key4", "key5", "str", "opr","number"};
         for (String n : name) {
-            data = data.replaceAll("(?<!\")[ ]\\[" + n + "\\][ ]", "<span class=\'" + n + "\'>");
+            data = data.replaceAll("(?<!\")[ ]`" + n + "`[ ]", "<span class=\'" + n + "\'>");
         }
-        data = data.replaceAll("[ ]\\[end\\][ ](?!(\"))", "</span>");//用正则表达式,设置了标识符不能被"和' 所包含,避免用户字符串中就正好包含我们的标识符,产生误判
+        data = data.replaceAll("[ ]`end`[ ](?!(\"))", "</span>");//用正则表达式,设置了标识符不能被"和' 所包含,避免用户字符串中就正好包含我们的标识符,产生误判
         return data;
     }
 
