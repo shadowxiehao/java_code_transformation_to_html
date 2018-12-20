@@ -1,5 +1,7 @@
 package text_level;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,7 +11,6 @@ import java.util.regex.Pattern;
  */
 public class JavaSyntaxHighlighter {
     private int pos1 = 0, pos2 = 0;//记录注释起始和终止位置
-    private int str_pos[] = {0, 0};//记录字符串""和''起始和终止位置
     private String line;//记录输入的整行java源代码并处理
     private String codeline = "";//记录分离注释后的代码行
     private String noteline = "";//记录注释部分
@@ -137,7 +138,7 @@ public class JavaSyntaxHighlighter {
 
     private void highlight_operator() {
         //'高亮运算符'
-        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "/", "<", ">", "&", "|", "!", "~", "[]", ";","!",":","."};
+        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "%", "/", "<", ">", "&", "|", "!", "~", "[]", ";","!",":",".", ","};
 
         String[] str_temp = codeline.split("(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')");
         for(String temp:str_temp) {
