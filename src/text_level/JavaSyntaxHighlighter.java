@@ -188,9 +188,9 @@ public class JavaSyntaxHighlighter {
         n = 0;
         StringBuffer codelineBuffer = new StringBuffer();
         for (String temp : str_temp) {
-            Matcher num = Pattern.compile("(?<!\\w)(?<![_])(\\d+)(?!\\w)").matcher(temp);
+            Matcher num = Pattern.compile("(?<!\\w)(?<![_])(\\d+?)(?!\\w)").matcher(temp);
             while (num.find()) {
-                temp = temp.replace(m.group()," `number` "+m.group()+" `end` ");
+                temp = temp.replace(num.group()," `number` "+num.group()+" `end` ");
             }
             codelineBuffer.append(temp);
             if (n < str.length) {
@@ -250,10 +250,11 @@ public class JavaSyntaxHighlighter {
         noteline = this.line.substring(pos1, pos2);
         codeline = this.line.substring(0, pos1) + this.line.substring(pos2, line.length());
 
-        this.highlight_note();  //处理行尾注释
-        this.highlight_keyword(); //处理关键字
-        this.highlight_operator();  //处理运算符
-        this.highlight_string(); //处理字符串
+        highlight_note();  //处理行尾注释
+        highlight_keyword(); //处理关键字
+        highlight_numbers();//处理数字
+        highlight_operator();  //处理运算符
+        highlight_string(); //处理字符串
         return codeline + noteline;  //返回处理好的行
     }
 }
