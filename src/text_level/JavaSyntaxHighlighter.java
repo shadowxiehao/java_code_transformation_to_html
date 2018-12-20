@@ -15,7 +15,7 @@ public class JavaSyntaxHighlighter {
     private String codeline = "";//记录分离注释后的代码行
     private String noteline = "";//记录注释部分
     private boolean Multiline_comment = false;//判断多行注释时使用
-    private String str_regex = "(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')";//判断字符串的正则表达式
+    private String str_regex = "(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')";//判断字符串的正则表达式 match " 和 '(同时不匹配\"和\'中的"和',防止误判)
 
     private String[][] regexkeywords;
     private String[][] keywords =
@@ -115,12 +115,28 @@ public class JavaSyntaxHighlighter {
     private void highlight_string() {
         //'高亮字符串'
 
-        //match " 和 '(同时不匹配\"和\'中的"和',防止误判)
+        String[] str_temp = codeline.split(str_regex);
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
-        while (m.find()) {
-            String strlist = m.group();
-            codeline = codeline.replace(strlist, " [str] " + strlist + " [end] ");
+        Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
+        int n=0;
+        while (m.find()){n++;}
+        String[] str = new String[n];//记录字符串
+        n=0;
+        while (m2.find()) {
+            str[n++]=m2.group();
         }
+        n=0;
+        StringBuffer codelineBuffer = new StringBuffer();
+        for(String temp:str){
+            if(n<str_temp.length){
+                codelineBuffer.append(str_temp[n++]);
+            }
+            codelineBuffer.append(" [str] "+ temp +" [end] ");
+        }
+        if(n<str_temp.length){
+            codelineBuffer.append(str_temp[n++]);
+        }
+        codeline = codelineBuffer.toString();
     }
 
     private void highlight_keyword() {
