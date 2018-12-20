@@ -1,7 +1,5 @@
 package text_level;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,7 +34,7 @@ public class JavaSyntaxHighlighter {
                             "HashAttributeSet", "HashDocAttributeSet", "HashMap", "HashPrintJobAttributeSet", "HashPrintRequestAttributeSet", "HashPrintServiceAttributeSet", "HashSet"
                     },
                     {"toString","length","matcher","Pattern","compile","Matcher","replace","trim","print","println",
-                            "replaceAll","group","equals","start","find","continue","extends","append","split",
+                            "replaceAll","group","equals","start","find","continue","extends","append","split","substring",
                             "_BindingIteratorImplBase","_BindingIteratorStub","_NamingContextImplBase","_NamingContextStub","_PolicyStub","_Remote_Stub","_ServantActivatorStub","_ServantLocatorStub"
                     },
                     {"false"},
@@ -200,9 +198,9 @@ public class JavaSyntaxHighlighter {
         //'转换为html标签'
         String[] name = {"note", "key1","key2", "key3", "key4", "key5", "str", "opr"};
         for (String n : name) {
-            data = data.replace(" [" + n + "] ", "<span class=\'" + n + "\'>");
+            data = data.replaceAll("(?<!\")[ ]\\[" + n + "\\][ ]", "<span class=\'" + n + "\'>");
         }
-        data = data.replace(" [end] ", "</span>");
+        data = data.replaceAll("[ ]\\[end\\][ ](?!(\"))", "</span>");//用正则表达式,设置了标识符不能被"和' 所包含,避免用户字符串中就正好包含我们的标识符,产生误判
         return data;
     }
 
