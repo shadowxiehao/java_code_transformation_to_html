@@ -24,20 +24,44 @@ public class JavaSyntaxHighlighter {
                             "enum", "extends", "for", "goto", "if", "implements", "import",
                             "instanceof", "interface", "native",
                             "new", "package", "private", "protected", "public",
-                            "return", "strictfp", "static", "super",
-                            "switch", "synchronized", "this", "throws", "throws",
+                            "return", "strictfp", "static", "super","final","finally",
+                            "switch", "synchronized", "this", "throws", "throws","void",
                             "transient", "try", "volatile", "while", "break", "null"
-                    },
+                    },//记录代码常用关键字
 
-                    {"boolean", "char", "float", "int", "long", "short", "void",
-                            "final", "finally", "String", "double", "StringBuffer", "StringBuilder", "var", "byte", "Object",
-                            "HashAttributeSet", "HashDocAttributeSet", "HashMap", "HashPrintJobAttributeSet", "HashPrintRequestAttributeSet", "HashPrintServiceAttributeSet", "HashSet"
-                    },
-                    {"toString", "length", "matcher", "Pattern", "compile", "Matcher", "replace", "trim", "print", "println",
-                            "replaceAll", "group", "equals", "start", "find", "continue", "extends", "append", "split", "substring",
-                            "_BindingIteratorImplBase", "_BindingIteratorStub", "_NamingContextImplBase", "_NamingContextStub", "_PolicyStub", "_Remote_Stub", "_ServantActivatorStub", "_ServantLocatorStub"
-                    },
-                    {"false"},
+                    {"boolean", "char", "float", "int", "long", "short" ,"Integer","Scanner","FileWriter","IOException","Exception","InterruptedException","File","FileInputStream","BufferedReader",
+                              "String", "double", "StringBuffer", "StringBuilder", "var", "byte", "Object","byte","Map","out","Matcher","Pattern","RandomAccessFile","PrintWriter",
+                            "HashAttributeSet", "HashDocAttributeSet", "HashMap", "HashPrintJobAttributeSet", "HashPrintRequestAttributeSet", "HashPrintServiceAttributeSet",
+                            "ImageIcon","URL","ProcessBuilder","Thread","Math","System","Throwable","NumberFormatException","CloneNotSupportedException",
+                            "TextField","TextArea","Button","Label","Checkbox","Choice","List","Frame","Menubar","Menu","MenuItem","CheckboxMenuItem","Dialog",
+                            "Filedialog","MouseMotionListener","PipedInputStream","PipedOutputStream","DataInputStream","DataOutputStream","ObjectInputStream","ObjectOutputStream",
+                            "PushbackInputStream","PushbackReader","Socket","ServerSocket","InetAddress","DatagramPacket","DatagramSocket","Applet","Connection","DriverManager",
+                            "SQLException","ResultSet","Statement","Jcomponent","JButton","JComboBox","JFileChooser","JInternalFrame","JLabel","JMenu","JMenuBar","JMenuItem",
+                            "JPasswordField","JPopupMenu","JProgressBar","JRadioButton","JScrollBar","JScrollPane","JSplitPane","JTable","JTextArea","JTexPane","JToolBar","JToolTip",
+
+
+                    },//记录代码常用类型名
+
+                    {"toString", "length", "matcher","matches", "compile", "replace", "trim", "print", "println","containsKey","printf","scanf","next","close","in",
+                            "replaceAll", "group", "equals", "start", "find", "continue", "extends", "append", "split", "substring","format","put","nextlnt","nextDouble",
+                            "nextLine","hasNext","nextFloat","hasNextInt","hasNextDouble","hasNextFloat","hasNextByte","nextByte","nextBoolean","hasNextBoolean",
+                            "end","charAt","printStackTrace","read","seek","writeBytes","getResource","currentThread","sleep","io","appendReplacement","appendTail",
+                            "max","min","pow","cbrt","sqrt","abs","random","rint","round","valueOf","parseInt","parseDouble","parseLong","toCharArray","compareTo","currentTimeMillis",
+                            "startsWith","endsWith","nextToken","hasMoreTokens","indexOf","setText","getText","setEchoChar","setEditable","addActionListener","removeActionListener",
+                            "setText","addTextListener","removeTextListener","insert","replaceRange","getCaretPosition","setLabel","setBackground",
+                            "getState","getLabel","add","remove","getSelectedIndex","addItemListener","removeItemListener","getSelectedItem","removeAll",
+                            "setForeground","setFonts","setBounds","setLocation","setVisible","getBounds","getToolkit","setEnabled","setSize","getTitle","setResizable",
+                            "setMenubar","getItem","getItemCount","addSeparator","setShortcut","setModal","getDirectory","getFile","getModifiers",
+                            "getX","getY","getClickCount","addMouseListener","removeMouseListener","mousePressed","mouseReleased","mouseEntered","mouseExited","mouseClicked",
+                            "addMouseMotionListener","mouseMoved","mouseDragged","setCursor","writeUTF","writeFloat","writeInt","writeLong","writeShort","writeDouble",
+                            "skipByte","readLong","readBoolean","readByte","readChar","readFloat","readFully","write","counnect","unread","getAppletContext","showDocument",
+                            "getByName","getHostName","getHostAddress","getLocalHost","receive","getPort","getAddress","getImage","getCodBase","drawImage","setIconImage",
+                            "getWidth","getHeight","executeQuery","createStatement","newAudioClip","getAudioClip","play","loop","stop","getDocumenBase","createPlayer","controllerUpdate",
+                            "prefetch","deallocate","getContentPane","setIcon","setHorizontalTextposition","setVerticalTextposition","setMnemonic","sort"
+
+                    },//记录代码常用方法
+
+                    {"false"},//这个我不想解释..
                     {"true"},
             };
 
@@ -48,14 +72,20 @@ public class JavaSyntaxHighlighter {
         this.line = ""; // 保存当前处理的行
 
         //下面把正则表达式加入到每个keywords旁边 给后面匹配key时用
-        regexkeywords = new String[keywords.length][keywords[0].length];
+        regexkeywords = new String[keywords.length][Math.max(keywords[1].length,keywords[2].length)];//因为关键字中数组1和2的长度最长,按他们中最长的长度来给regexkeywords分配空间
         for (int i = 0; i < keywords.length; i++) {
             int j = 0;
             for (String w : keywords[i]) {//这里添加关键字的正则匹配式子
                 if (w != null) {
-                    regexkeywords[i][j] = "(?<!\\w)";//关键字前面不能有字符,或者字符串标识符"和'
-                    regexkeywords[i][j] += w;//要匹配的关键字
-                    regexkeywords[i][j] += "(?!\\w)";//关键字后面不能有字符
+                    if (i == 2) {
+                        regexkeywords[i][j] = "(?<!\\w)(?<=[\\.])";//关键字前面不能有字符,或者字符串标识符"和'
+                        regexkeywords[i][j] += w;//要匹配的关键字
+                        regexkeywords[i][j] += "(?!\\w)";//关键字后面不能有字符
+                    } else {
+                        regexkeywords[i][j] = "(?<!\\w)";//关键字前面不能有字符,或者字符串标识符"和'
+                        regexkeywords[i][j] += w;//要匹配的关键字
+                        regexkeywords[i][j] += "(?!\\w)";//关键字后面不能有字符
+                    }
                 }
                 j++;
             }
@@ -90,8 +120,8 @@ public class JavaSyntaxHighlighter {
             } else return;
         }
 
-        //用正则模式/(/|\*)(.*)|\*(.*)|(.*)\*/$检查是否为单行注释(//xxx /*xxx*/ *xxx xxx*/)
-        Pattern p1 = Pattern.compile("^((/([/*]))(.*)|(/\\*(.*))|(/(.*)\\*/)|(^\\*.*$))");
+        //用正则模式/(/|\*)(.*)|\*(.*)|(.*)\*/$检查是否为单行注释(//xxx /*xxx*/ *xxx xxx*/)或者是@Test这种
+        Pattern p1 = Pattern.compile("^((/([/*]))(.*)|(/\\*(.*))|(/(.*)\\*/)|(^\\*.*$))|(^@\\w+)");
         Matcher find_note1 = p1.matcher(this.line.trim());
         if (find_note1.find()) {
             //处理单行注释;
@@ -99,7 +129,7 @@ public class JavaSyntaxHighlighter {
             return;
         }
 
-        Matcher find_note2 = Pattern.compile("(?<=[){};])(\\s*?)(//.*$)").matcher(this.line);//查找行尾注释
+        Matcher find_note2 = Pattern.compile("(?<=[){};=,+])(\\s*?)(//.*$)").matcher(this.line);//查找行尾注释
         if (find_note2.find()) {
             pos1 = find_note2.start(2);  //标记行尾注释;
         }
@@ -108,7 +138,7 @@ public class JavaSyntaxHighlighter {
     private void highlight_note() {
         //'高亮注释行'
         if (!noteline.equals("")) {  // note为空,表示行尾无注释
-            Matcher m = Pattern.compile("^(\\*?)(@\\w+?)([ ])").matcher(noteline.trim());
+            Matcher m = Pattern.compile("^(\\*?)(@\\w+)").matcher(noteline.trim());
             if(m.find()){
                 noteline = noteline.replace(m.group(2)," `noteplus` "+m.group(2)+" `end` ");//给注释中
             }
@@ -257,8 +287,8 @@ public class JavaSyntaxHighlighter {
         codeline = this.line.substring(0, pos1) + this.line.substring(pos2, line.length());
 
         highlight_note();  //处理行尾注释
-        highlight_keyword(); //处理关键字
         highlight_numbers();//处理数字
+        highlight_keyword(); //处理关键字
         highlight_operator();  //处理运算符
         highlight_string(); //处理字符串
         return codeline + noteline;  //返回处理好的行
