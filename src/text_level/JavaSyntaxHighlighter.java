@@ -15,8 +15,8 @@ public class JavaSyntaxHighlighter {
     private boolean Multiline_comment = false;//判断多行注释时使用
     private String str_regex = "(?<!\\\\)(\")(.*?)(?<!\\\\)(\")|(?<!\\\\)(\')(.*?)(?<!\\\\)(\')";//判断字符串的正则表达式 match " 和 '(同时不匹配\"和\'中的"和',防止误判)
 
-    private String[][] regexkeywords;
-    private String[][] keywords =
+    private String[][] regexkeywords;//存储keywords加了正则表达式后的地方
+    private String[][] keywords =//这里记录关键字1,2,3,4,5分别有哪些
             {
                     {"abstract", "assert", "break",
                             "case", "catch", "class", "const",
@@ -46,6 +46,8 @@ public class JavaSyntaxHighlighter {
      */
     public JavaSyntaxHighlighter() {
         this.line = ""; // 保存当前处理的行
+
+        //下面把正则表达式加入到每个keywords旁边 给后面匹配key时用
         regexkeywords = new String[keywords.length][keywords[0].length];
         for (int i = 0; i < keywords.length; i++) {
             int j = 0;
@@ -106,7 +108,11 @@ public class JavaSyntaxHighlighter {
     private void highlight_note() {
         //'高亮注释行'
         if (!noteline.equals("")) {  // note为空,表示行尾无注释
-            noteline = noteline.replace(noteline, " `note` " + noteline + " `end` ");
+            Matcher m = Pattern.compile("^(\\*?)(@\\w+?)([ ])").matcher(noteline.trim());
+            if(m.find()){
+                noteline = noteline.replace(m.group(2)," `noteplus` "+m.group(2)+" `end` ");//给注释中
+            }
+            noteline = noteline.replace(noteline, " `note` " + noteline + " `end` ");//最后把整个注释行贴上注释标识符
         }
     }
 
@@ -231,7 +237,7 @@ public class JavaSyntaxHighlighter {
 
     public String translate(String data) {
         //'转换为html标签'
-        String[] name = {"note", "key1", "key2", "key3", "key4", "key5", "str", "opr","number"};
+        String[] name = {"note", "noteplus","key1", "key2", "key3", "key4", "key5", "str", "opr","number"};
         for (String n : name) {
             data = data.replaceAll("(?<!\")[ ]`" + n + "`[ ]", "<span class=\'" + n + "\'>");
         }

@@ -24,7 +24,8 @@ public class Transformation extends JavaSyntaxHighlighter{
             ".note{color:#808080;font-weight:bold;font-style:italic;}",
             ".str{color:#EE7600;font-weight:bold;}",
             ".opr{color:#F000B2;font-weight:bolder;}",
-            ".number{color:#057A0F;font-weight:bold;}",
+            ".number{color:#45818e;font-weight:bold;}",
+            ".noteplus{color:#b05001;font-weight:bold;font-style:italic;}",
             "</style>", "</head>", "<body>", "<pre>"};
     private String[] html_tail = {"</pre>", "</body>", "</html>"};//html尾文件,会添加到html的最后,作为标记格式设置的结束
 
