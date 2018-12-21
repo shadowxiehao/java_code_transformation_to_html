@@ -1,5 +1,6 @@
 package text_level;
 
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +39,7 @@ public class JavaSyntaxHighlighter {
                             "PushbackInputStream","PushbackReader","Socket","ServerSocket","InetAddress","DatagramPacket","DatagramSocket","Applet","Connection","DriverManager",
                             "SQLException","ResultSet","Statement","Jcomponent","JButton","JComboBox","JFileChooser","JInternalFrame","JLabel","JMenu","JMenuBar","JMenuItem",
                             "JPasswordField","JPopupMenu","JProgressBar","JRadioButton","JScrollBar","JScrollPane","JSplitPane","JTable","JTextArea","JTexPane","JToolBar","JToolTip",
-
+                            "Queue","Set","ArrayList","LinkedList","HashSet"
 
                     },//记录代码常用类型名
 
@@ -57,7 +58,9 @@ public class JavaSyntaxHighlighter {
                             "skipByte","readLong","readBoolean","readByte","readChar","readFloat","readFully","write","counnect","unread","getAppletContext","showDocument",
                             "getByName","getHostName","getHostAddress","getLocalHost","receive","getPort","getAddress","getImage","getCodBase","drawImage","setIconImage",
                             "getWidth","getHeight","executeQuery","createStatement","newAudioClip","getAudioClip","play","loop","stop","getDocumenBase","createPlayer","controllerUpdate",
-                            "prefetch","deallocate","getContentPane","setIcon","setHorizontalTextposition","setVerticalTextposition","setMnemonic","sort"
+                            "prefetch","deallocate","getContentPane","setIcon","setHorizontalTextposition","setVerticalTextposition","setMnemonic","sort","clear","containsAll",
+                            "getChars","getBytes","equalsIgnoreCase","regionMatches","lastIndexOf","concat","ensureCapacity","setLength","setCharAt","reverse","deleteCharAt",
+                            "delete","reset"
 
                     },//记录代码常用方法
 
@@ -151,15 +154,14 @@ public class JavaSyntaxHighlighter {
 
         String[] str_temp = codeline.split(str_regex);
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
-        Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
         int n = 0;
         while (m.find()) {
             n++;
         }
         String[] str = new String[n];//记录字符串
-        n = 0;
-        while (m2.find()) {
-            str[n++] = m2.group();
+        n = 0;m.reset();
+        while (m.find()) {
+            str[n++] = m.group();
         }
         n = 0;
         StringBuffer codelineBuffer = new StringBuffer();
@@ -179,15 +181,14 @@ public class JavaSyntaxHighlighter {
         //'高亮关键字'
         String[] str_temp = codeline.split(str_regex);
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
-        Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
         int n = 0;
         while (m.find()) {
             n++;
         }
         String[] str = new String[n];//记录字符串
-        n = 0;
-        while (m2.find()) {
-            str[n++] = m2.group();
+        n = 0;m.reset();
+        while (m.find()) {
+            str[n++] = m.group();
         }
         n = 0;
         StringBuffer codelineBuffer = new StringBuffer();
@@ -211,15 +212,14 @@ public class JavaSyntaxHighlighter {
         //高亮数字
         String[] str_temp = codeline.split(str_regex);
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
-        Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
         int n = 0;
         while (m.find()) {
             n++;
         }
         String[] str = new String[n];//记录字符串
-        n = 0;
-        while (m2.find()) {
-            str[n++] = m2.group();
+        n = 0;m.reset();
+        while (m.find()) {
+            str[n++] = m.group();
         }
         n = 0;
         StringBuffer codelineBuffer = new StringBuffer();
@@ -238,18 +238,17 @@ public class JavaSyntaxHighlighter {
 
     private void highlight_operator() {
         //'高亮运算符'
-        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "%", "/", "<", ">", "&", "|", "!", "~", "[", "]", ";", "!", ":", ".", ","};
+        String[] opr = {"=", "(", ")", "{", "}", "|", "+", "-", "*", "%", "/", "<", ">", "&", "|", "!", "~", "[", "]", ";", "!", ":", ".", ","};//存储要匹配的运算符
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
-        Matcher m2 = Pattern.compile(str_regex).matcher(codeline);
         String[] str_temp = codeline.split(str_regex);//记录非字符串
         int n = 0;
         while (m.find()) {
             n++;
         }
         String[] str = new String[n];//记录字符串
-        n = 0;
-        while (m2.find()) {
-            str[n++] = m2.group();
+        n = 0;m.reset();
+        while (m.find()) {
+            str[n++] = m.group();
         }
         n = 0;
         StringBuffer codelineBuffer = new StringBuffer();

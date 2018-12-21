@@ -1,5 +1,4 @@
 package test;
-import org.junit.jupiter.api.Test;
 import text_level.*;
 
 import java.io.BufferedReader;
@@ -7,10 +6,8 @@ import java.io.FileReader;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class TransformTest {
-    @Test
     public static void main(String[] args){
         //录入文件路径 测试时用
         String print;
