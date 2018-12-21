@@ -16,7 +16,8 @@ import java.io.*;
  */
 
 public class GUI extends JFrame implements ActionListener {
-	String str1, str2, strOutPut, strTemp;
+	String s,str1, str2, strOutPut, strTemp;
+	static int version = 0;
 	static JEditorPane jEditorPane1 = new JEditorPane();// 用于显示java文件预览
 	static JEditorPane jEditorPane2 = new JEditorPane();// 用于显示html文件预览
 	static JButton b1 = new JButton("...");// 测试按钮，点击之后选择本地文件进行浏览，预览放在jEditorPane1中
@@ -49,7 +50,7 @@ public class GUI extends JFrame implements ActionListener {
 
 		JPanel panel1 = new JPanel(new GridLayout(1, 0, 3, 3));
 		panel1.setBackground(Color.WHITE);
-		panel1.setPreferredSize(new Dimension(0, 400));
+		panel1.setPreferredSize(new Dimension(0, 250));
 		JPanel panel1_1 = new JPanel();
 		panel1_1.setBackground(Color.WHITE);
 		panel1_1.setLayout(new BoxLayout(panel1_1, BoxLayout.Y_AXIS));
@@ -196,7 +197,7 @@ public class GUI extends JFrame implements ActionListener {
 		tip2.setFont(new Font("楷体", 1, 14));
 		JLabel tip3 = new JLabel("    3: 关键字1：public、abstract、static等……  关键字2：int、float、char等……  关键字3：toString、length、matcher等……    ");
 		tip3.setFont(new Font("楷体", 1, 14));
-		JLabel tip4 = new JLabel("4: 生成的目标文件名为\"Result.html\"");
+		JLabel tip4 = new JLabel("4: 生成的目标文件名为\"Result（第n版）.html\"");
 		tip4.setFont(new Font("楷体", 1, 14));
 		
 		panel4.add(tip0);
@@ -225,7 +226,7 @@ public class GUI extends JFrame implements ActionListener {
 		b3.addActionListener(this);
 		b4.addActionListener(this);
 
-		setSize(1200, 1000);// 整体frame大小
+		setSize(1200, 800);// 整体frame大小
 		centerWindow();// 用于使主窗口位于屏幕中央显示
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -292,7 +293,7 @@ public class GUI extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {// 按钮动作监听器
-
+		
 		if (e.getSource() == b1) {// 如果动作源是按钮1
 			File file = null;
 			JFileChooser chooser = new JFileChooser();
@@ -303,7 +304,7 @@ public class GUI extends JFrame implements ActionListener {
 				int flag = chooser.showOpenDialog(null);
 				if (flag == JFileChooser.APPROVE_OPTION) {
 					file = chooser.getSelectedFile();
-					String s = file.getAbsolutePath();
+					s = file.getAbsolutePath();
 					str1 = s.replace("\\", "\\\\").toString();
 					String str = "file:" + s;
 					jEditorPane1.setPage(str);
@@ -329,7 +330,7 @@ public class GUI extends JFrame implements ActionListener {
 				int flag = chooser.showOpenDialog(null);
 				if (flag == JFileChooser.APPROVE_OPTION) {
 					file = chooser.getSelectedFile();
-					String s = file.getAbsolutePath();
+					s = file.getAbsolutePath();
 					str2 = s.replace("\\", "\\\\").toString() + "\\\\Result.html";
 					strOutPut = "file:" + s + "\\Result.html";
 					t2.setText(s);
@@ -340,6 +341,9 @@ public class GUI extends JFrame implements ActionListener {
 		} else if (e.getSource() == b3) {
 			Transformation t;
 			try {
+				version++;
+				str2 = s.replace("\\", "\\\\").toString() + "\\\\Result（第" + version + "版）.html";
+				strOutPut = "file:" + s + "\\Result（第" + version + "版）.html";
 				String font = cbxFont.getSelectedItem().toString();
 				String fontSize = cbxFontSize.getSelectedItem().toString();
 				String keyWords1 = cbxKeyWords1.getSelectedItem().toString().substring(0, 7);
@@ -348,7 +352,7 @@ public class GUI extends JFrame implements ActionListener {
 				String note = cbxNote.getSelectedItem().toString().substring(0, 7);
 				String string = cbxString.getSelectedItem().toString().substring(0, 7);
 				String opr = cbxOpr.getSelectedItem().toString().substring(0, 7);
-				System.out.println(keyWords1);
+
 				t = new Transformation(str1, str2);
 				
 				String[] getHead = t.getHtml_head();
@@ -363,8 +367,9 @@ public class GUI extends JFrame implements ActionListener {
 				
 				t.Main_Transformation();
 				jEditorPane2.setPage(strOutPut);
-				JOptionPane.showMessageDialog(null, "格式转换完成！", "提示", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(null, "          格式转换完成！", "提示", JOptionPane.INFORMATION_MESSAGE);
 			} catch (Exception ex) {
+				JOptionPane.showMessageDialog(null, "          地址选择错误！", "警告", JOptionPane.WARNING_MESSAGE);
 				ex.printStackTrace();
 			}
 		}else if (e.getSource() == b4) {
