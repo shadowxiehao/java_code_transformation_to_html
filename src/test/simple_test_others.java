@@ -6,11 +6,13 @@ import java.util.regex.Pattern;
 public class simple_test_others {
 
     public static void main(String[] args) throws Exception {
-        String input = " \"<style type=\\\"text/css\\\">\",\"1\";\"2\"";
+        String input = "abc,";
         System.out.println(input);
-        int pos = 3;
-        System.out.println(pos);
-        String noteline = input.substring(0,pos);
-        System.out.println(noteline);
+        String[] output = input.split(",");
+        for(String str:output)
+            System.out.println(str);
+        for(int i=0;i<output.length;i++){
+            System.out.println(output[i]);
+        }
     }
 }

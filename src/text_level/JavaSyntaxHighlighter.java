@@ -4,9 +4,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/*
-@author XieHao
-@function 专门进行代码高亮部分处理,找出需高亮部分,并留下记号;但高亮的颜色和样式得到Transformation类中处理
+/**
+ * @author XieHao 谢昊
+ * @function 专门进行代码高亮部分处理, 找出需高亮部分, 并留下记号;但高亮的颜色和样式得到Transformation类中处理
  */
 public class JavaSyntaxHighlighter {
     private int pos1 = 0, pos2 = 0;//记录注释起始和终止位置
@@ -40,7 +40,6 @@ public class JavaSyntaxHighlighter {
                             "SQLException","ResultSet","Statement","Jcomponent","JButton","JComboBox","JFileChooser","JInternalFrame","JLabel","JMenu","JMenuBar","JMenuItem",
                             "JPasswordField","JPopupMenu","JProgressBar","JRadioButton","JScrollBar","JScrollPane","JSplitPane","JTable","JTextArea","JTexPane","JToolBar","JToolTip",
                             "Queue","Set","ArrayList","LinkedList","HashSet"
-
                     },//记录代码常用类型名
 
                     {"toString", "length", "matcher","matches", "compile", "replace", "trim", "print", "println","containsKey","printf","scanf","next","close","in",
@@ -61,15 +60,14 @@ public class JavaSyntaxHighlighter {
                             "prefetch","deallocate","getContentPane","setIcon","setHorizontalTextposition","setVerticalTextposition","setMnemonic","sort","clear","containsAll",
                             "getChars","getBytes","equalsIgnoreCase","regionMatches","lastIndexOf","concat","ensureCapacity","setLength","setCharAt","reverse","deleteCharAt",
                             "delete","reset"
-
                     },//记录代码常用方法
 
                     {"false"},//这个我不想解释..
                     {"true"},
             };
 
-    /*
-    构造函数
+    /**
+     * 这是构造函数
      */
     public JavaSyntaxHighlighter() {
         this.line = ""; // 保存当前处理的行
@@ -96,6 +94,7 @@ public class JavaSyntaxHighlighter {
     }
 
     private void note_pos_find() {
+        //查找注释部分位置并存到pos数组里
         pos1 = line.length();
         pos2 = line.length();//先假设没有注释
         //判断是否是多行注释
@@ -149,8 +148,16 @@ public class JavaSyntaxHighlighter {
         }
     }
 
+    /**
+     * 高亮字符串
+     * 主要思路是用split和group,将字符串和非字符串各分入到两个不同的字符串数组里
+     * 分别处理后再按非字符串+字符串+非字符串......这种顺序插回到codeline里
+     * (试了一下,这种顺序匹配都会成功,比如字符串前面什么都没有,可能会先插字符串后面的,但是没有,
+     * 可能和split特性有关,即如果第一个就是分隔符,那么存入数组的第一个将是一个空白字符)
+     * 实现精确的处理
+     * 后面的那些匹配原理差不多,就不解释了
+     */
     private void highlight_string() {
-        //'高亮字符串'
 
         String[] str_temp = codeline.split(str_regex);
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
@@ -264,7 +271,12 @@ public class JavaSyntaxHighlighter {
         codeline = codelineBuffer.toString();
     }
 
-    public String translate(String data) {
+    /**
+     * 将已经加好标识,转化成html格式
+     * @param data 输入已经加入标识符标记的字符串
+     * @return 将标识符转为html格式的字符串
+     */
+    private String translate(String data) {
         //'转换为html标签'
         String[] name = {"note", "noteplus","key1", "key2", "key3", "key4", "key5", "str", "opr","number"};
         for (String n : name) {
@@ -274,6 +286,12 @@ public class JavaSyntaxHighlighter {
         return data;
     }
 
+    /**
+     * 处理文本文件中的每行,找到不同需高亮的地方并用html格式标记,最后全部转化成html格式,
+     * 这是这个类主要的函数,调用这个类别的private函数完成处理
+     * @param line 输入读入文件中的一行
+     * @return 返回处理好的一行
+     */
     String highlight(String line) {
         //'单行代码高亮'
         this.line = line;
@@ -282,14 +300,17 @@ public class JavaSyntaxHighlighter {
         }  //空串不处理
 
         note_pos_find();//pos记录注释开始位置,避免对注释处理
-        noteline = this.line.substring(pos1, pos2);
-        codeline = this.line.substring(0, pos1) + this.line.substring(pos2, line.length());
+        noteline = this.line.substring(pos1, pos2);//取出注释部分
+        codeline = this.line.substring(0, pos1) + this.line.substring(pos2, line.length());//取出代码部分
 
         highlight_note();  //处理行尾注释
         highlight_numbers();//处理数字
         highlight_keyword(); //处理关键字
         highlight_operator();  //处理运算符
         highlight_string(); //处理字符串
-        return codeline + noteline;  //返回处理好的行
+        line = codeline + noteline;
+        line = line.replace("<", "&lt;");//替换java中的“<”为html的显示符,防止html误判
+        line = line.replace(">", "&gt;");//替换java中的“>”为html的显示符
+        return translate(line);  //返回转化好标识符,处理好的行
     }
 }

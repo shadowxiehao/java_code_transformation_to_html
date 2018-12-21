@@ -4,9 +4,10 @@ import java.io.*;
 
 /**
  * @author XieHao 谢昊
- * 这个类主要进行文本格式层面的转化
+ * 这个类主要进行文本格式层面的转化(需要调用JavaSyntaxHighlighter类)
+ * 将文本文件转为html格式
+ * 并且将符合的不同代码部分高亮处理
  */
-
 public class Transformation extends JavaSyntaxHighlighter{
     private String input_file ;
     private String output_file ;
@@ -78,11 +79,9 @@ public class Transformation extends JavaSyntaxHighlighter{
                     data += '\n';
                 }
                 data += process(str);
-                data=data.replace("<", "&lt;");//替换java中的“<”为html的显示符
-                data=data.replace(">", "&gt;");//替换java中的“>”为html的显示符
                 n++;
             }
-            output.write(translate(data)); //转换为html的<> 标签
+            output.write(data); //转换为html的<> 标签
 
             //这里放入html结尾格式
             output.write(tail_process());
@@ -105,8 +104,8 @@ public class Transformation extends JavaSyntaxHighlighter{
     }
 
     /**
-     * 这里将html_head+\n先放到文件头部
-     * @return 返回处理好的字符串
+     * 处理html头文件,将其合并成一组字符串,除了头尾,每个都加/n换行
+     * @return 含 html头文件 的字符串
      */
     private String head_process(){
         StringBuilder temp = new StringBuilder();
@@ -121,21 +120,23 @@ public class Transformation extends JavaSyntaxHighlighter{
     }
 
     /**
-     *
+     * 将得到的一行字符串,转成高亮后的html格式
+     * 最后加个换行符
      * @param string 输入中间的一行字符串,进行html转化和高亮处理
      * @return 返回处理后的字符串
      */
     private String process(String string) {
         String final_str ;
-
-        //string=string.replace("<", "&lt");//替换java中的“<”为html的显示符
-
         final_str = highlight(string);//进行代码高亮处理
         final_str += '\n';//最后每行换行
 
         return final_str;
     }
 
+    /**
+     * 处理html尾部文件格式,将其合并成一组字符串,除了头尾,中间以\n换行分隔
+     * @return 含 html尾部文件格式 的字符串
+     */
     private String tail_process(){
         StringBuilder temp = new StringBuilder();
         for (String str2 : html_tail) {
