@@ -39,28 +39,31 @@ public class JavaSyntaxHighlighter {
                             "PushbackInputStream","PushbackReader","Socket","ServerSocket","InetAddress","DatagramPacket","DatagramSocket","Applet","Connection","DriverManager",
                             "SQLException","ResultSet","Statement","Jcomponent","JButton","JComboBox","JFileChooser","JInternalFrame","JLabel","JMenu","JMenuBar","JMenuItem",
                             "JPasswordField","JPopupMenu","JProgressBar","JRadioButton","JScrollBar","JScrollPane","JSplitPane","JTable","JTextArea","JTexPane","JToolBar","JToolTip",
-                            "Queue","Set","ArrayList","LinkedList","HashSet","Arrays"
+                            "Queue","Set","ArrayList","LinkedList","HashSet","Arrays","Font","JPanel","Dimension","Toolkit","GraphicsEnvironment","Transformation","BoxLayout",
+                            "JEditorPane","ItemEvent"
                     },//记录代码常用类型名
 
-                    {"toString", "length", "matcher","matches", "compile", "replace", "trim", "print", "println","containsKey","printf","scanf","next","close","in",
-                            "replaceAll", "group", "equals", "start", "find", "continue", "extends", "append", "split", "substring","format","put","nextlnt","nextDouble",
-                            "nextLine","hasNext","nextFloat","hasNextInt","hasNextDouble","hasNextFloat","hasNextByte","nextByte","nextBoolean","hasNextBoolean",
-                            "end","charAt","printStackTrace","read","seek","writeBytes","getResource","currentThread","sleep","io","appendReplacement","appendTail",
-                            "max","min","pow","cbrt","sqrt","abs","random","rint","round","valueOf","parseInt","parseDouble","parseLong","toCharArray","compareTo","currentTimeMillis",
-                            "startsWith","endsWith","nextToken","hasMoreTokens","indexOf","setText","getText","setEchoChar","setEditable","addActionListener","removeActionListener",
-                            "setText","addTextListener","removeTextListener","insert","replaceRange","getCaretPosition","setLabel","setBackground",
-                            "getState","getLabel","add","remove","getSelectedIndex","addItemListener","removeItemListener","getSelectedItem","removeAll",
-                            "setForeground","setFonts","setBounds","setLocation","setVisible","getBounds","getToolkit","setEnabled","setSize","getTitle","setResizable",
-                            "setMenubar","getItem","getItemCount","addSeparator","setShortcut","setModal","getDirectory","getFile","getModifiers",
-                            "getX","getY","getClickCount","addMouseListener","removeMouseListener","mousePressed","mouseReleased","mouseEntered","mouseExited","mouseClicked",
-                            "addMouseMotionListener","mouseMoved","mouseDragged","setCursor","writeUTF","writeFloat","writeInt","writeLong","writeShort","writeDouble",
-                            "skipByte","readLong","readBoolean","readByte","readChar","readFloat","readFully","write","counnect","unread","getAppletContext","showDocument",
-                            "getByName","getHostName","getHostAddress","getLocalHost","receive","getPort","getAddress","getImage","getCodBase","drawImage","setIconImage",
-                            "getWidth","getHeight","executeQuery","createStatement","newAudioClip","getAudioClip","play","loop","stop","getDocumenBase","createPlayer","controllerUpdate",
-                            "prefetch","deallocate","getContentPane","setIcon","setHorizontalTextposition","setVerticalTextposition","setMnemonic","sort","clear","containsAll",
-                            "getChars","getBytes","equalsIgnoreCase","regionMatches","lastIndexOf","concat","ensureCapacity","setLength","setCharAt","reverse","deleteCharAt",
-                            "delete","reset"
-                    },//记录代码常用方法
+                    {"1"
+                    },/*记录代码常用方法,这里原来设置了下面这么多..,然后我发现方法一般都是在 . 后面 括号前面.. 不是的就需要高级的匹配方式了 然而我没时间了..所以就这样吧
+                    "toString", "length", "matcher","matches", "compile", "replace", "trim", "print", "println","containsKey","printf","scanf","next","close","in",
+                    "replaceAll", "group", "equals", "start", "find", "continue", "extends", "append", "split", "substring","format","put","nextlnt","nextDouble",
+                    "nextLine","hasNext","nextFloat","hasNextInt","hasNextDouble","hasNextFloat","hasNextByte","nextByte","nextBoolean","hasNextBoolean",
+                    "end","charAt","printStackTrace","read","seek","writeBytes","getResource","currentThread","sleep","io","appendReplacement","appendTail",
+                    "max","min","pow","cbrt","sqrt","abs","random","rint","round","valueOf","parseInt","parseDouble","parseLong","toCharArray","compareTo","currentTimeMillis",
+                    "startsWith","endsWith","nextToken","hasMoreTokens","indexOf","setText","getText","setEchoChar","setEditable","addActionListener","removeActionListener",
+                    "setText","addTextListener","removeTextListener","insert","replaceRange","getCaretPosition","setLabel","setBackground",
+                    "getState","getLabel","add","remove","getSelectedIndex","addItemListener","removeItemListener","getSelectedItem","removeAll",
+                    "setForeground","setFonts","setBounds","setLocation","setVisible","getBounds","getToolkit","setEnabled","setSize","getTitle","setResizable",
+                    "setMenubar","getItem","getItemCount","addSeparator","setShortcut","setModal","getDirectory","getFile","getModifiers",
+                    "getX","getY","getClickCount","addMouseListener","removeMouseListener","mousePressed","mouseReleased","mouseEntered","mouseExited","mouseClicked",
+                    "addMouseMotionListener","mouseMoved","mouseDragged","setCursor","writeUTF","writeFloat","writeInt","writeLong","writeShort","writeDouble",
+                    "skipByte","readLong","readBoolean","readByte","readChar","readFloat","readFully","write","counnect","unread","getAppletContext","showDocument",
+                    "getByName","getHostName","getHostAddress","getLocalHost","receive","getPort","getAddress","getImage","getCodBase","drawImage","setIconImage",
+                    "getWidth","getHeight","executeQuery","createStatement","newAudioClip","getAudioClip","play","loop","stop","getDocumenBase","createPlayer","controllerUpdate",
+                    "prefetch","deallocate","getContentPane","setIcon","setHorizontalTextposition","setVerticalTextposition","setMnemonic","sort","clear","containsAll",
+                    "getChars","getBytes","equalsIgnoreCase","regionMatches","lastIndexOf","concat","ensureCapacity","setLength","setCharAt","reverse","deleteCharAt",
+                    "delete","reset","setFont","setPreferredSize","setAlignment","centerWindow","setDefaultCloseOperation","addItem","getLocalGraphicsEnvironment",
+                    "getAvailableFontFamilyNames","getSource","setPage","getAbsolutePath","getSelectedFile","getStateChange","SELECTED"*/
 
                     {"false"},//这个我不想解释..
                     {"true"},
@@ -80,8 +83,8 @@ public class JavaSyntaxHighlighter {
                 if (w != null) {
                     if (i == 2) {
                         regexkeywords[i][j] = "(?<!\\w)(?<=[\\.])";//关键字前面不能有字符,或者字符串标识符"和'
-                        regexkeywords[i][j] += w;//要匹配的关键字
-                        regexkeywords[i][j] += "(?!\\w)";//关键字后面不能有字符
+                        regexkeywords[i][j] += "(\\w+?)";//要匹配的关键字
+                        regexkeywords[i][j] += "((?=\\.)|(?=\\()|(?=\\)))";//关键字后面不能有字符
                     } else {
                         regexkeywords[i][j] = "(?<!\\w)";//关键字前面不能有字符,或者字符串标识符"和'
                         regexkeywords[i][j] += w;//要匹配的关键字
@@ -142,14 +145,14 @@ public class JavaSyntaxHighlighter {
         if (!noteline.equals("")) {  // note为空,表示行尾无注释
             Matcher m = Pattern.compile("^(\\*?)(@\\w+)").matcher(noteline.trim());
             if(m.find()){
-                noteline = noteline.replace(m.group(2)," `noteplus` "+m.group(2)+" `end` ");//给注释中
+                noteline = noteline.replaceFirst(m.group(2)," `noteplus` "+m.group(2)+" `end` ");//给注释中
             }
             noteline = noteline.replace(noteline, " `note` " + noteline + " `end` ");//最后把整个注释行贴上注释标识符
         }
     }
 
     /**
-     * 高亮字符串
+     * 下面的函数
      * 主要思路是用split和group,将字符串和非字符串各分入到两个不同的字符串数组里
      * 分别处理后再按非字符串+字符串+非字符串......这种顺序插回到codeline里
      * (试了一下,这种顺序匹配都会成功,比如字符串前面什么都没有,可能会先插字符串后面的,但是没有,
@@ -158,14 +161,14 @@ public class JavaSyntaxHighlighter {
      * 后面的那些匹配原理差不多,就不解释了
      */
     private void highlight_string() {
-
+        //高亮字符串
         String[] str_temp = codeline.split(str_regex);
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
         int n = 0;
-        while (m.find()) {
+        while (m.find()) {//先找有多少个字符串
             n++;
         }
-        String[] str = new String[n];//记录字符串
+        String[] str = new String[n];//分配记录字符串的数组长度
         n = 0;m.reset();
         while (m.find()) {
             str[n++] = m.group();
@@ -189,10 +192,10 @@ public class JavaSyntaxHighlighter {
         String[] str_temp = codeline.split(str_regex);
         Matcher m = Pattern.compile(str_regex).matcher(codeline);
         int n = 0;
-        while (m.find()) {
+        while (m.find()) {//先找有多少个字符串
             n++;
         }
-        String[] str = new String[n];//记录字符串
+        String[] str = new String[n];//分配记录字符串的数组长度
         n = 0;m.reset();
         while (m.find()) {
             str[n++] = m.group();
@@ -207,14 +210,18 @@ public class JavaSyntaxHighlighter {
                     }
                 }
             }
-            codelineBuffer.append(temp);
+            codelineBuffer.append(temp);//添加处理好的非字符串
             if (n < str.length) {
-                codelineBuffer.append(str[n++]);
+                codelineBuffer.append(str[n++]);//添加字符串
             }
         }
         codeline = codelineBuffer.toString();
     }
 
+    /**
+     * replaceFirst是为了避免有的数字包含在别的数字里面,造成错误匹配
+     * 所以先把第一次全匹配完了,再replace一遍把可能是重复的数字匹配上
+     */
     private void highlight_numbers() {
         //高亮数字
         String[] str_temp = codeline.split(str_regex);
@@ -231,7 +238,11 @@ public class JavaSyntaxHighlighter {
         n = 0;
         StringBuffer codelineBuffer = new StringBuffer();
         for (String temp : str_temp) {
-            Matcher num = Pattern.compile("(?<!\\w)(?<![_])(\\d+?)(?!\\w)").matcher(temp);
+            Matcher num = Pattern.compile("(?<!\\w)(?<![_])(\\d+)+(?!\\w)").matcher(temp);//匹配数字的部分
+            while (num.find()) {
+                temp = temp.replaceFirst(num.group()," `number` "+num.group()+" `end` ");
+            }
+            num.reset();
             while (num.find()) {
                 temp = temp.replace(num.group()," `number` "+num.group()+" `end` ");
             }
