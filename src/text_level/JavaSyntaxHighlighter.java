@@ -39,7 +39,7 @@ public class JavaSyntaxHighlighter {
                             "PushbackInputStream","PushbackReader","Socket","ServerSocket","InetAddress","DatagramPacket","DatagramSocket","Applet","Connection","DriverManager",
                             "SQLException","ResultSet","Statement","Jcomponent","JButton","JComboBox","JFileChooser","JInternalFrame","JLabel","JMenu","JMenuBar","JMenuItem",
                             "JPasswordField","JPopupMenu","JProgressBar","JRadioButton","JScrollBar","JScrollPane","JSplitPane","JTable","JTextArea","JTexPane","JToolBar","JToolTip",
-                            "Queue","Set","ArrayList","LinkedList","HashSet"
+                            "Queue","Set","ArrayList","LinkedList","HashSet","Arrays"
                     },//记录代码常用类型名
 
                     {"toString", "length", "matcher","matches", "compile", "replace", "trim", "print", "println","containsKey","printf","scanf","next","close","in",

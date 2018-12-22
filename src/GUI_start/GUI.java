@@ -1,23 +1,20 @@
 package GUI_start;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.io.*;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 
 import text_level.Transformation;
-
-import java.io.*;
 
 /**
  * @author Lynn 武丞 这个类完成图形界面的设计
  */
 
 public class GUI extends JFrame implements ActionListener {
-	String s,str1, str2, strOutPut, strTemp;
-	static int version = 0;
+	String s1, s2 ,str1, str2, strOutPut, strTemp;
+	static int test_version, version = 0;
 	static JEditorPane jEditorPane1 = new JEditorPane();// 用于显示java文件预览
 	static JEditorPane jEditorPane2 = new JEditorPane();// 用于显示html文件预览
 	static JButton b1 = new JButton("...");// 测试按钮，点击之后选择本地文件进行浏览，预览放在jEditorPane1中
@@ -186,19 +183,19 @@ public class GUI extends JFrame implements ActionListener {
 
 		// 第四部分：panel4 -- 操作提示
 		JPanel panel4 = new JPanel(fc);
-		panel4.setPreferredSize(new Dimension(0, -100));
+		panel4.setPreferredSize(new Dimension(0, -95));
 		panel4.setBackground(Color.WHITE);
 		
 		JLabel tip0 = new JLabel("                            使用说明                            ");
-		tip0.setFont(new Font("楷体", 1, 14));
-		JLabel tip1 = new JLabel("                            1: 选择源文件地址时请选择目标文件，选择保存文件地址时请选择文件夹。                            ");
-		tip1.setFont(new Font("楷体", 1, 14));
+		tip0.setFont(new Font("楷体", 1, 13));
+		JLabel tip1 = new JLabel("                              1: 选择源文件地址时请选择目标文件，选择保存文件地址时请选择文件夹。                              ");
+		tip1.setFont(new Font("楷体", 1, 13));
 		JLabel tip2 = new JLabel("2: 进行转换前请选择每类关键字需要配置的颜色");
-		tip2.setFont(new Font("楷体", 1, 14));
-		JLabel tip3 = new JLabel("    3: 关键字1：public、abstract、static等……  关键字2：int、float、char等……  关键字3：toString、length、matcher等……    ");
-		tip3.setFont(new Font("楷体", 1, 14));
+		tip2.setFont(new Font("楷体", 1, 13));
+		JLabel tip3 = new JLabel("     3: 关键字1：public、abstract、static等……  关键字2：int、float、char等……  关键字3：toString、length、matcher等……     ");
+		tip3.setFont(new Font("楷体", 1, 13));
 		JLabel tip4 = new JLabel("4: 生成的目标文件名为\"Result（第n版）.html\"");
-		tip4.setFont(new Font("楷体", 1, 14));
+		tip4.setFont(new Font("楷体", 1, 13));
 		
 		panel4.add(tip0);
 		panel4.add(tip1);
@@ -225,6 +222,16 @@ public class GUI extends JFrame implements ActionListener {
 		b2.addActionListener(this);
 		b3.addActionListener(this);
 		b4.addActionListener(this);
+		/*cbxFont.addActionListener(this);
+		cbxFontSize.addActionListener(this);
+		cbxKeyWords1.addActionListener(this);
+		cbxKeyWords2.addActionListener(this);
+		cbxKeyWords3.addActionListener(this);
+		cbxNote.addActionListener(this);
+		cbxString.addActionListener(this);
+		cbxOpr.addActionListener(this);*/
+		
+		
 
 		setSize(1200, 800);// 整体frame大小
 		centerWindow();// 用于使主窗口位于屏幕中央显示
@@ -301,17 +308,245 @@ public class GUI extends JFrame implements ActionListener {
 			Transformation t;
 
 			try { 
+				test_version++;
 				int flag = chooser.showOpenDialog(null);
 				if (flag == JFileChooser.APPROVE_OPTION) {
 					file = chooser.getSelectedFile();
-					s = file.getAbsolutePath();
-					str1 = s.replace("\\", "\\\\").toString();
-					String str = "file:" + s;
+					s1 = file.getAbsolutePath();
+					str1 = s1.replace("\\", "\\\\");
+					String str = "file:" + s1;
 					jEditorPane1.setPage(str);
-					t1.setText(s);
-					str2 = str1.toString() + ".html";
-					strTemp = "file:" + str2;
+					t1.setText(s1);
+					str2 = str1 + "（第" + test_version +  "版）.html";
+					
 					t = new Transformation(str1, str2);
+					
+					cbxFont.addItemListener(new ItemListener() {// 添加选项事件监听器
+						public void itemStateChanged(ItemEvent e) {
+							int stateChange = e.getStateChange();// 获得事件类型
+							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
+								test_version++;
+								str2 = str1 + "（第" + test_version +  "版）.html";
+								strTemp = "file:" + str2;
+								try {
+									Transformation a;
+									a = new Transformation(str1, str2);
+									String[] getHead = a.getHtml_head();
+									getHead[8] = "pre{font-family:"+cbxFont.getSelectedItem().toString()+";font-size:"+cbxFontSize.getSelectedItem().toString()+"px;}";
+									getHead[10] = ".key1{color:" + cbxKeyWords1.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[11] = ".key2{color:" + cbxKeyWords2.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[12] = ".key3{color:" + cbxKeyWords3.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[15] = ".note{color:" + cbxNote.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;font-style:italic;}";
+									getHead[16] = ".str{color:" + cbxString.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[17] = ".opr{color:" + cbxOpr.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									a.setHtml_head(getHead);
+									a.Main_Transformation();
+									jEditorPane2.setPage(strTemp);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+							} 
+						}
+					});
+					
+					cbxFontSize.addItemListener(new ItemListener() {// 添加选项事件监听器
+						public void itemStateChanged(ItemEvent e) {
+							int stateChange = e.getStateChange();// 获得事件类型
+							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
+								test_version++;
+								str2 = str1 + "（第" + test_version +  "版）.html";
+								strTemp = "file:" + str2;
+								try {
+									Transformation a;
+									a = new Transformation(str1, str2);
+									String[] getHead = a.getHtml_head();
+									getHead[8] = "pre{font-family:"+cbxFont.getSelectedItem().toString()+";font-size:"+cbxFontSize.getSelectedItem().toString()+"px;}";
+									getHead[10] = ".key1{color:" + cbxKeyWords1.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[11] = ".key2{color:" + cbxKeyWords2.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[12] = ".key3{color:" + cbxKeyWords3.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[15] = ".note{color:" + cbxNote.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;font-style:italic;}";
+									getHead[16] = ".str{color:" + cbxString.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[17] = ".opr{color:" + cbxOpr.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									a.setHtml_head(getHead);
+									a.Main_Transformation();
+									jEditorPane2.setPage(strTemp);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+							} 
+						}
+					});
+					
+					cbxKeyWords1.addItemListener(new ItemListener() {// 添加选项事件监听器
+						public void itemStateChanged(ItemEvent e) {
+							int stateChange = e.getStateChange();// 获得事件类型
+							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
+								test_version++;
+								str2 = str1 + "（第" + test_version +  "版）.html";
+								strTemp = "file:" + str2;
+								try {
+									Transformation a;
+									a = new Transformation(str1, str2);
+									String[] getHead = a.getHtml_head();
+									getHead[8] = "pre{font-family:"+cbxFont.getSelectedItem().toString()+";font-size:"+cbxFontSize.getSelectedItem().toString()+"px;}";
+									getHead[10] = ".key1{color:" + cbxKeyWords1.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[11] = ".key2{color:" + cbxKeyWords2.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[12] = ".key3{color:" + cbxKeyWords3.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[15] = ".note{color:" + cbxNote.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;font-style:italic;}";
+									getHead[16] = ".str{color:" + cbxString.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[17] = ".opr{color:" + cbxOpr.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									
+									a.setHtml_head(getHead);
+									a.Main_Transformation();
+									jEditorPane2.setPage(strTemp);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+							} 
+						}
+					});
+					
+					cbxKeyWords2.addItemListener(new ItemListener() {// 添加选项事件监听器
+						public void itemStateChanged(ItemEvent e) {
+							int stateChange = e.getStateChange();// 获得事件类型
+							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
+								test_version++;
+								str2 = str1 + "（第" + test_version +  "版）.html";
+								strTemp = "file:" + str2;
+								try {
+									Transformation a;
+									a = new Transformation(str1, str2);
+									String[] getHead = a.getHtml_head();
+									getHead[8] = "pre{font-family:"+cbxFont.getSelectedItem().toString()+";font-size:"+cbxFontSize.getSelectedItem().toString()+"px;}";
+									getHead[10] = ".key1{color:" + cbxKeyWords1.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[11] = ".key2{color:" + cbxKeyWords2.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[12] = ".key3{color:" + cbxKeyWords3.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[15] = ".note{color:" + cbxNote.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;font-style:italic;}";
+									getHead[16] = ".str{color:" + cbxString.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[17] = ".opr{color:" + cbxOpr.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									a.setHtml_head(getHead);
+									a.Main_Transformation();
+									jEditorPane2.setPage(strTemp);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+							} 
+						}
+					});
+					
+					cbxKeyWords3.addItemListener(new ItemListener() {// 添加选项事件监听器
+						public void itemStateChanged(ItemEvent e) {
+							int stateChange = e.getStateChange();// 获得事件类型
+							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
+								test_version++;
+								str2 = str1 + "（第" + test_version +  "版）.html";
+								strTemp = "file:" + str2;
+								try {
+									Transformation a;
+									a = new Transformation(str1, str2);
+									String[] getHead = a.getHtml_head();
+									getHead[8] = "pre{font-family:"+cbxFont.getSelectedItem().toString()+";font-size:"+cbxFontSize.getSelectedItem().toString()+"px;}";
+									getHead[10] = ".key1{color:" + cbxKeyWords1.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[11] = ".key2{color:" + cbxKeyWords2.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[12] = ".key3{color:" + cbxKeyWords3.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[15] = ".note{color:" + cbxNote.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;font-style:italic;}";
+									getHead[16] = ".str{color:" + cbxString.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[17] = ".opr{color:" + cbxOpr.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									a.setHtml_head(getHead);
+									a.Main_Transformation();
+									jEditorPane2.setPage(strTemp);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+							} 
+						}
+					});
+					
+					cbxNote.addItemListener(new ItemListener() {// 添加选项事件监听器
+						public void itemStateChanged(ItemEvent e) {
+							int stateChange = e.getStateChange();// 获得事件类型
+							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
+								test_version++;
+								str2 = str1 + "（第" + test_version +  "版）.html";
+								strTemp = "file:" + str2;
+								try {
+									Transformation a;
+									a = new Transformation(str1, str2);
+									String[] getHead = a.getHtml_head();
+									getHead[8] = "pre{font-family:"+cbxFont.getSelectedItem().toString()+";font-size:"+cbxFontSize.getSelectedItem().toString()+"px;}";
+									getHead[10] = ".key1{color:" + cbxKeyWords1.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[11] = ".key2{color:" + cbxKeyWords2.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[12] = ".key3{color:" + cbxKeyWords3.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[15] = ".note{color:" + cbxNote.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;font-style:italic;}";
+									getHead[16] = ".str{color:" + cbxString.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[17] = ".opr{color:" + cbxOpr.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									a.setHtml_head(getHead);
+									a.Main_Transformation();
+									jEditorPane2.setPage(strTemp);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+							} 
+						}
+					});
+					
+					cbxString.addItemListener(new ItemListener() {// 添加选项事件监听器
+						public void itemStateChanged(ItemEvent e) {
+							int stateChange = e.getStateChange();// 获得事件类型
+							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
+								test_version++;
+								str2 = str1 + "（第" + test_version +  "版）.html";
+								strTemp = "file:" + str2;
+								try {
+									Transformation a;
+									a = new Transformation(str1, str2);
+									String[] getHead = a.getHtml_head();
+									getHead[8] = "pre{font-family:"+cbxFont.getSelectedItem().toString()+";font-size:"+cbxFontSize.getSelectedItem().toString()+"px;}";
+									getHead[10] = ".key1{color:" + cbxKeyWords1.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[11] = ".key2{color:" + cbxKeyWords2.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[12] = ".key3{color:" + cbxKeyWords3.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[15] = ".note{color:" + cbxNote.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;font-style:italic;}";
+									getHead[16] = ".str{color:" + cbxString.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[17] = ".opr{color:" + cbxOpr.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									a.setHtml_head(getHead);
+									a.Main_Transformation();
+									jEditorPane2.setPage(strTemp);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+							} 
+						}
+					});
+					
+					cbxOpr.addItemListener(new ItemListener() {// 添加选项事件监听器
+						public void itemStateChanged(ItemEvent e) {
+							int stateChange = e.getStateChange();// 获得事件类型
+							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
+								test_version++;
+								str2 = str1 + "（第" + test_version +  "版）.html";
+								strTemp = "file:" + str2;
+								try {
+									Transformation a;
+									a = new Transformation(str1, str2);
+									String[] getHead = a.getHtml_head();
+									getHead[8] = "pre{font-family:"+cbxFont.getSelectedItem().toString()+";font-size:"+cbxFontSize.getSelectedItem().toString()+"px;}";
+									getHead[10] = ".key1{color:" + cbxKeyWords1.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[11] = ".key2{color:" + cbxKeyWords2.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[12] = ".key3{color:" + cbxKeyWords3.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[15] = ".note{color:" + cbxNote.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;font-style:italic;}";
+									getHead[16] = ".str{color:" + cbxString.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									getHead[17] = ".opr{color:" + cbxOpr.getSelectedItem().toString().substring(0, 7) + ";font-weight:bold;}";
+									a.setHtml_head(getHead);
+									a.Main_Transformation();
+									jEditorPane2.setPage(strTemp);
+								} catch (Exception e1) {
+									e1.printStackTrace();
+								}
+							} 
+						}
+					});
+					
+					strTemp = "file:" + str2;
 					t.Main_Transformation();
 					jEditorPane2.setPage(strTemp);
 				}
@@ -330,10 +565,10 @@ public class GUI extends JFrame implements ActionListener {
 				int flag = chooser.showOpenDialog(null);
 				if (flag == JFileChooser.APPROVE_OPTION) {
 					file = chooser.getSelectedFile();
-					s = file.getAbsolutePath();
-					str2 = s.replace("\\", "\\\\").toString() + "\\\\Result.html";
-					strOutPut = "file:" + s + "\\Result.html";
-					t2.setText(s);
+					s2 = file.getAbsolutePath();
+					str2 = s2.replace("\\", "\\\\") + "\\\\Result.html";
+					strOutPut = "file:" + s2 + "\\Result.html";
+					t2.setText(s2);
 				}
 			} catch (HeadlessException ex) {
 				System.out.println(e);
@@ -341,14 +576,18 @@ public class GUI extends JFrame implements ActionListener {
 		} else if (e.getSource() == b3) {
 			Transformation t;
 			try {
+				if(s1 == null || s2 == null) {
+					throw (new Exception());
+				}
+				
 				version++;
-				str2 = s.replace("\\", "\\\\").toString() + "\\\\Result（第" + version + "版）.html";
-				strOutPut = "file:" + s + "\\Result（第" + version + "版）.html";
+				str2 = s2.replace("\\", "\\\\") + "\\\\Result（第" + version + "版）.html";
+				strOutPut = "file:" + s2 + "\\Result（第" + version + "版）.html";
 				String font = cbxFont.getSelectedItem().toString();
 				String fontSize = cbxFontSize.getSelectedItem().toString();
 				String keyWords1 = cbxKeyWords1.getSelectedItem().toString().substring(0, 7);
-				String keyWords2 = cbxKeyWords1.getSelectedItem().toString().substring(0, 7);
-				String keyWords3 = cbxKeyWords1.getSelectedItem().toString().substring(0, 7);
+				String keyWords2 = cbxKeyWords2.getSelectedItem().toString().substring(0, 7);
+				String keyWords3 = cbxKeyWords3.getSelectedItem().toString().substring(0, 7);
 				String note = cbxNote.getSelectedItem().toString().substring(0, 7);
 				String string = cbxString.getSelectedItem().toString().substring(0, 7);
 				String opr = cbxOpr.getSelectedItem().toString().substring(0, 7);
@@ -375,7 +614,5 @@ public class GUI extends JFrame implements ActionListener {
 		}else if (e.getSource() == b4) {
 			JOptionPane.showMessageDialog(null, "作者：171304213 武丞\n             171304214 谢昊", "关于我们", JOptionPane.INFORMATION_MESSAGE);
 		}
-
 	}
-
 }
