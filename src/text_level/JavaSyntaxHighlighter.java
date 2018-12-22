@@ -201,7 +201,14 @@ public class JavaSyntaxHighlighter {
             for (int i = 0; i < regexkeywords.length; i++) {
                 for (int j = 0; j < regexkeywords[i].length; j++) {
                     if (regexkeywords[i][j] != null) {
-                        temp = temp.replaceAll(regexkeywords[i][j], " `key" + (i + 1) + "` " + keywords[i][j] + " `end` ");
+                        if (i == 2) {
+                            Matcher w = Pattern.compile(regexkeywords[i][j]).matcher(temp);
+                            while (w.find()) {
+                                temp = temp.replaceAll(regexkeywords[i][j], " `key" + (i + 1) + "` " + w.group() + " `end` ");
+                            }
+                        } else {
+                            temp = temp.replaceAll(regexkeywords[i][j], " `key" + (i + 1) + "` " + keywords[i][j] + " `end` ");
+                        }
                     }
                 }
             }
