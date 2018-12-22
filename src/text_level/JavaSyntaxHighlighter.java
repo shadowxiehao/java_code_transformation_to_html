@@ -234,7 +234,7 @@ public class JavaSyntaxHighlighter {
         n = 0;
         StringBuffer codelineBuffer = new StringBuffer();
         for (String temp : str_temp) {
-            Matcher num = Pattern.compile("(?<!\\w)(?<![_])(\\d+)+(?!\\w)").matcher(temp);//匹配数字的部分
+            Matcher num = Pattern.compile("(?<![\\w_])(\\d+)+(?!\\w)").matcher(temp);//匹配数字的部分
             while (num.find()) {
                 temp = temp.replaceFirst(num.group(), " `number` " + num.group() + " `end` ");
             }
