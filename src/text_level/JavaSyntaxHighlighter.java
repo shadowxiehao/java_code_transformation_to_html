@@ -77,7 +77,7 @@ public class JavaSyntaxHighlighter {
                     if (i == 2) {
                         regexkeywords[i][j] = "(?<!\\w)(?<=[\\.])";//关键字前面不能有字符,或者字符串标识符"和'
                         regexkeywords[i][j] += "(\\w+?)";//要匹配的关键字
-                        regexkeywords[i][j] += "((?=\\.)|(?=\\()|(?=\\)))";//关键字后面不能有字符
+                        regexkeywords[i][j] += "(?=[\\(\\).;])";//关键字后面不能有字符
                     } else {
                         regexkeywords[i][j] = "(?<!\\w)";//关键字前面不能有字符,或者字符串标识符"和'
                         regexkeywords[i][j] += w;//要匹配的关键字
