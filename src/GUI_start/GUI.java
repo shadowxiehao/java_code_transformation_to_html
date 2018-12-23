@@ -13,7 +13,7 @@ import text_level.Transformation;
  */
 
 public class GUI extends JFrame implements ActionListener {
-	String s1, s2 ,str1, str2, strOutPut, strTemp;
+	String s1, s2 ,str1, str2, strOutPut, strTemp, rootString;
 	static int test_version, version = 0;
 	static JEditorPane jEditorPane1 = new JEditorPane();// 用于显示java文件预览
 	static JEditorPane jEditorPane2 = new JEditorPane();// 用于显示html文件预览
@@ -21,21 +21,22 @@ public class GUI extends JFrame implements ActionListener {
 	static JButton b2 = new JButton("...");
 	static JButton b3 = new JButton("开始转换");
 	static JButton b4 = new JButton("关于我们");
+	static JButton b5 = new JButton("清除缓存");
 	static JTextField t1 = new JTextField(30);// 存放源文件地址
 	static JTextField t2 = new JTextField(29);// 存放目标文件地址
-	static JComboBox cbxFont = new JComboBox();
-	static JComboBox cbxFontSize = new JComboBox();
-	static JComboBox cbxKeyWords1 = new JComboBox();
-	static JComboBox cbxKeyWords2 = new JComboBox();
-	static JComboBox cbxKeyWords3 = new JComboBox();
-	static JComboBox cbxNote= new JComboBox();
-	static JComboBox cbxString = new JComboBox();
-	static JComboBox cbxOpr = new JComboBox();
+	static JComboBox<String> cbxFont = new JComboBox<>();
+	static JComboBox<Integer> cbxFontSize = new JComboBox<>();
+	static JComboBox<String> cbxKeyWords1 = new JComboBox<>();
+	static JComboBox<String> cbxKeyWords2 = new JComboBox<>();
+	static JComboBox<String> cbxKeyWords3 = new JComboBox<>();
+	static JComboBox<String> cbxNote= new JComboBox<>();
+	static JComboBox<String> cbxString = new JComboBox<>();
+	static JComboBox<String> cbxOpr = new JComboBox<>();
 
 	public static void main(String[] args) {
 
 		// 主要框架：Frame以及Frame上BoxLayout的Container
-		GUI frame = new GUI("java文件格式转换器");
+		GUI frame = new GUI("Transformationer");
 		Container container = new Container();// 由于整体要采用盒式布局，而frame无法设置为盒式布局，所以选择以contianer作为整体画布
 		container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
@@ -176,9 +177,13 @@ public class GUI extends JFrame implements ActionListener {
 		b3.setFont(new Font("楷体", 1, 15));
 		b4.setPreferredSize(new Dimension(120,50));
 		b4.setFont(new Font("楷体", 1, 15));
-		panel3_2.add(new JLabel("              "));
+		b5.setPreferredSize(new Dimension(120,50));
+		b5.setFont(new Font("楷体", 1, 15));
+		panel3_2.add(new JLabel("    "));
 		panel3_2.add(b3);
-		panel3_2.add(new JLabel("              "));
+		panel3_2.add(new JLabel("    "));
+		panel3_2.add(b5);
+		panel3_2.add(new JLabel("    "));
 		panel3_2.add(b4);
 
 		// 第四部分：panel4 -- 操作提示
@@ -222,17 +227,8 @@ public class GUI extends JFrame implements ActionListener {
 		b2.addActionListener(this);
 		b3.addActionListener(this);
 		b4.addActionListener(this);
-		/*cbxFont.addActionListener(this);
-		cbxFontSize.addActionListener(this);
-		cbxKeyWords1.addActionListener(this);
-		cbxKeyWords2.addActionListener(this);
-		cbxKeyWords3.addActionListener(this);
-		cbxNote.addActionListener(this);
-		cbxString.addActionListener(this);
-		cbxOpr.addActionListener(this);*/
+		b5.addActionListener(this);
 		
-		
-
 		setSize(1200, 800);// 整体frame大小
 		centerWindow();// 用于使主窗口位于屏幕中央显示
 
@@ -291,7 +287,8 @@ public class GUI extends JFrame implements ActionListener {
 		String[] fontList = ge.getAvailableFontFamilyNames();
 		int i;
 		
-		for(i = 1; i < fontList.length; i++) {
+		cbxFont.addItem("Consolas");
+		for(i = 2; i < fontList.length; i++) {
 			cbxFont.addItem(fontList[i]);
 		}
 		for(i = 13; i <= 72; i++) {
@@ -314,11 +311,15 @@ public class GUI extends JFrame implements ActionListener {
 					file = chooser.getSelectedFile();
 					s1 = file.getAbsolutePath();
 					str1 = s1.replace("\\", "\\\\");
+					rootString = file.getParentFile().getAbsolutePath().replace("\\", "\\\\");
 					String str = "file:" + s1;
+					JOptionPane.showMessageDialog(null, "    文件载入完成，请等待！", "提示", JOptionPane.INFORMATION_MESSAGE);
 					jEditorPane1.setPage(str);
 					t1.setText(s1);
-					str2 = str1 + "（第" + test_version +  "版）.html";
-					
+					File tempFile = new File(rootString + "\\temp files");
+					tempFile.mkdirs();
+					str2 = rootString + "\\\\temp files\\\\预览文件第" + test_version +  "版.html";
+					System.out.println(str2);
 					t = new Transformation(str1, str2);
 					
 					cbxFont.addItemListener(new ItemListener() {// 添加选项事件监听器
@@ -326,7 +327,7 @@ public class GUI extends JFrame implements ActionListener {
 							int stateChange = e.getStateChange();// 获得事件类型
 							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
 								test_version++;
-								str2 = str1 + "（第" + test_version +  "版）.html";
+								str2 = rootString + "\\\\temp files\\\\预览文件第" + test_version +  "版.html";
 								strTemp = "file:" + str2;
 								try {
 									Transformation a;
@@ -354,7 +355,7 @@ public class GUI extends JFrame implements ActionListener {
 							int stateChange = e.getStateChange();// 获得事件类型
 							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
 								test_version++;
-								str2 = str1 + "（第" + test_version +  "版）.html";
+								str2 = rootString + "\\\\temp files\\\\预览文件第" + test_version +  "版.html";
 								strTemp = "file:" + str2;
 								try {
 									Transformation a;
@@ -382,7 +383,7 @@ public class GUI extends JFrame implements ActionListener {
 							int stateChange = e.getStateChange();// 获得事件类型
 							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
 								test_version++;
-								str2 = str1 + "（第" + test_version +  "版）.html";
+								str2 = rootString + "\\\\temp files\\\\预览文件第" + test_version +  "版.html";
 								strTemp = "file:" + str2;
 								try {
 									Transformation a;
@@ -411,7 +412,7 @@ public class GUI extends JFrame implements ActionListener {
 							int stateChange = e.getStateChange();// 获得事件类型
 							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
 								test_version++;
-								str2 = str1 + "（第" + test_version +  "版）.html";
+								str2 = rootString + "\\\\temp files\\\\预览文件第" + test_version +  "版.html";
 								strTemp = "file:" + str2;
 								try {
 									Transformation a;
@@ -439,7 +440,7 @@ public class GUI extends JFrame implements ActionListener {
 							int stateChange = e.getStateChange();// 获得事件类型
 							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
 								test_version++;
-								str2 = str1 + "（第" + test_version +  "版）.html";
+								str2 = rootString + "\\\\temp files\\\\预览文件第" + test_version +  "版.html";
 								strTemp = "file:" + str2;
 								try {
 									Transformation a;
@@ -467,7 +468,7 @@ public class GUI extends JFrame implements ActionListener {
 							int stateChange = e.getStateChange();// 获得事件类型
 							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
 								test_version++;
-								str2 = str1 + "（第" + test_version +  "版）.html";
+								str2 = rootString + "\\\\temp files\\\\预览文件第" + test_version +  "版.html";
 								strTemp = "file:" + str2;
 								try {
 									Transformation a;
@@ -495,7 +496,7 @@ public class GUI extends JFrame implements ActionListener {
 							int stateChange = e.getStateChange();// 获得事件类型
 							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
 								test_version++;
-								str2 = str1 + "（第" + test_version +  "版）.html";
+								str2 = rootString + "\\\\temp files\\\\预览文件第" + test_version +  "版.html";
 								strTemp = "file:" + str2;
 								try {
 									Transformation a;
@@ -523,7 +524,7 @@ public class GUI extends JFrame implements ActionListener {
 							int stateChange = e.getStateChange();// 获得事件类型
 							if (stateChange == ItemEvent.SELECTED) {// 查看是否由选中选项触发
 								test_version++;
-								str2 = str1 + "（第" + test_version +  "版）.html";
+								str2 = rootString + "\\\\temp files\\\\预览文件第" + test_version +  "版.html";
 								strTemp = "file:" + str2;
 								try {
 									Transformation a;
@@ -579,10 +580,8 @@ public class GUI extends JFrame implements ActionListener {
 				if(s1 == null || s2 == null) {
 					throw (new Exception());
 				}
-				
 				version++;
 				str2 = s2.replace("\\", "\\\\") + "\\\\Result（第" + version + "版）.html";
-				strOutPut = "file:" + s2 + "\\Result（第" + version + "版）.html";
 				String font = cbxFont.getSelectedItem().toString();
 				String fontSize = cbxFontSize.getSelectedItem().toString();
 				String keyWords1 = cbxKeyWords1.getSelectedItem().toString().substring(0, 7);
@@ -605,7 +604,6 @@ public class GUI extends JFrame implements ActionListener {
 				t.setHtml_head(getHead);
 				
 				t.Main_Transformation();
-				jEditorPane2.setPage(strOutPut);
 				JOptionPane.showMessageDialog(null, "          格式转换完成！", "提示", JOptionPane.INFORMATION_MESSAGE);
 			} catch (Exception ex) {
 				JOptionPane.showMessageDialog(null, "          地址选择错误！", "警告", JOptionPane.WARNING_MESSAGE);
@@ -613,6 +611,59 @@ public class GUI extends JFrame implements ActionListener {
 			}
 		}else if (e.getSource() == b4) {
 			JOptionPane.showMessageDialog(null, "作者：171304213 武丞\n             171304214 谢昊", "关于我们", JOptionPane.INFORMATION_MESSAGE);
+		}else if(e.getSource() == b5) {
+			deleteDirectory(rootString + "\\temp files");
+			JOptionPane.showMessageDialog(null, "    本地预览文件清理完成！", "提示", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
+	
+    /**
+         * 删除目录（文件夹）以及目录下的文件
+     * @param   sPath 被删除目录的文件路径
+     * @return  目录删除成功返回true，否则返回false
+     */
+    public boolean deleteDirectory(String sPath) {
+        //如果sPath不以文件分隔符结尾，自动添加文件分隔符
+        if (!sPath.endsWith(File.separator)) {
+            sPath = sPath + File.separator;
+        }
+        File dirFile = new File(sPath);
+        //如果dir对应的文件不存在，或者不是一个目录，则退出
+        if (!dirFile.exists() || !dirFile.isDirectory()) {
+            return false;
+        }
+        boolean flag = true;
+        //删除文件夹下的所有文件(包括子目录)
+        File[] files = dirFile.listFiles();
+        for (int i = 0; i < files.length; i++) {
+            //删除子文件
+            if (files[i].isFile()) {
+                flag = deleteFile(files[i].getAbsolutePath());
+                if (!flag) break;
+            } //删除子目录
+            else {
+                flag = deleteDirectory(files[i].getAbsolutePath());
+                if (!flag) break;
+            }
+        }
+        if (!flag) return false;
+        //删除当前目录
+        if (dirFile.delete()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean deleteFile(String sPath) {
+        boolean flag = false;
+        File file;
+        file = new File(sPath);
+        // 路径为文件且不为空则进行删除
+        if (file.isFile() && file.exists()) {
+            file.delete();
+            flag = true;
+        }
+        return flag;
+    }
 }
