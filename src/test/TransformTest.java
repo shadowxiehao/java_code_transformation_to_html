@@ -10,7 +10,6 @@ import java.util.Scanner;
 class TransformTest {
     public static void main(String[] args){
         //录入文件路径 测试时用
-        String print;
         Scanner sc = new Scanner(System.in);
         System.out.print("请输入Java文件路径:");
         String a ="F:\\study&work\\works\\java\\class_design\\curriculum design\\src\\GUI_start\\GUI.java";

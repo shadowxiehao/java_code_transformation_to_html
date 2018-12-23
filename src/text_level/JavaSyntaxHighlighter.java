@@ -1,6 +1,5 @@
 package text_level;
 
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,6 +63,7 @@ public class JavaSyntaxHighlighter {
 
     /**
      * 这是构造函数
+     * 这里顺便把每个keywords的正则表达式录入到regexkeywords中
      */
     public JavaSyntaxHighlighter() {
         this.line = ""; // 保存当前处理的行
@@ -306,8 +306,8 @@ public class JavaSyntaxHighlighter {
      * 处理文本文件中的每行,找到不同需高亮的地方并用html格式标记,最后全部转化成html格式,
      * 这是这个类主要的函数,调用这个类别的private函数完成处理
      *
-     * @param line 输入读入文件中的一行
-     * @return 返回处理好的一行
+     * @param line 输入读入代码文件中的一行
+     * @return 返回处理好代码高亮的一行
      */
     String highlight(String line) {
         //'单行代码高亮'
