@@ -8,5 +8,5 @@
 入口GUI文件: GUI.java
 测试运行: 使用 test package
 
-@auther 谢昊(代码转化+高亮) 武丞(UI界面互动)
+@auther XieHao(代码转化+高亮) WuChen (UI界面互动)
 time: 2018.12 - 2018.12
