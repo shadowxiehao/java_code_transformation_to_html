@@ -93,13 +93,8 @@ public class Transformation extends JavaSyntaxHighlighter {
             // 一次读入一行，直到读入null为文件结束
             String str;
             String data = "";
-            int n = 0;
             while ((str = reader.readLine()) != null) {
-                if (n != 0) {
-                    data += '\n';
-                }
                 data += process(str);
-                n++;
             }
             output.write(data); //转换为html的<> 标签
 
